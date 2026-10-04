@@ -28,16 +28,13 @@ data or using **Clear local data** removes the saved history.
 
 ## Shared game data
 
-The local shared-data snapshot is:
+The application reads public article, category, correct-rate, and aggregate
+score data from Azure Blob Storage. It does not contain a player's score
+history.
 
-```text
-public/data/game-data.jsonl
-```
-
-It contains public article, category, correct-rate, and aggregate score data. It
-does not contain a player's score history. The deployed application reads this
-data from the Azure Blob URL configured through `VITE_GAME_DATA_URL`; the local
-snapshot remains the initial Azure seed and the development fallback.
+For local development, copy `.env.example` to `.env.local` and set
+`VITE_GAME_DATA_URL` to the deployed blob URL. Production builds fail when this
+setting is missing so they cannot silently deploy stale packaged data.
 
 ## Deployment
 

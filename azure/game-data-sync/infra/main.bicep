@@ -269,10 +269,6 @@ resource functionApp 'Microsoft.Web/sites@2024-11-01' = {
           name: 'FUNCTIONS_EXTENSION_VERSION'
           value: '~4'
         }
-        {
-          name: 'FUNCTIONS_WORKER_RUNTIME'
-          value: 'node'
-        }
       ]
       ftpsState: 'Disabled'
       minTlsVersion: '1.2'

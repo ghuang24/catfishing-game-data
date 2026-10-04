@@ -2,13 +2,12 @@
 set -euo pipefail
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-repo_root="$(cd "$script_dir/../.." && pwd)"
 resource_group="${RESOURCE_GROUP:-rg-catfishing-game-data}"
 location="${AZURE_LOCATION:-westus2}"
 base_name="${BASE_NAME:-catfishing}"
 allowed_origin="${ALLOWED_ORIGIN:-*}"
 deployment_name="game-data-sync"
-seed_file="$repo_root/public/data/game-data.jsonl"
+seed_file="${SEED_FILE:-}"
 
 for command in az curl func gzip npm; do
   if ! command -v "$command" >/dev/null 2>&1; then
@@ -19,11 +18,6 @@ done
 
 if [[ ! "$base_name" =~ ^[a-z0-9-]{3,20}$ ]]; then
   echo "BASE_NAME must contain 3-20 lowercase letters, numbers, or hyphens." >&2
-  exit 1
-fi
-
-if [[ ! -f "$seed_file" ]]; then
-  echo "Seed data file not found: $seed_file" >&2
   exit 1
 fi
 
@@ -75,6 +69,15 @@ blob_url="$(az deployment group show \
   --output tsv)"
 
 if ! curl --fail --silent --head "$blob_url" >/dev/null; then
+  if [[ -z "$seed_file" ]]; then
+    echo "The game-data blob does not exist. Set SEED_FILE to an existing JSONL snapshot." >&2
+    exit 1
+  fi
+  if [[ ! -f "$seed_file" ]]; then
+    echo "Seed data file not found: $seed_file" >&2
+    exit 1
+  fi
+
   echo "Uploading the initial compressed game-data snapshot..."
   temporary_file="$(mktemp)"
   trap 'rm -f "$temporary_file"' EXIT

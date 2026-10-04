@@ -44,8 +44,15 @@ GitHub Pages origin or custom-domain origin to make the CORS policy narrower.
 `CONFIGURE_GITHUB=true` uses the GitHub CLI to set the repository Actions
 variable consumed by the Pages build.
 
-The script safely reruns for infrastructure or code changes. It seeds the blob
-from `public/data/game-data.jsonl` only when the blob does not already exist.
+The script safely reruns for infrastructure or code changes. Existing blobs are
+never reseeded. For a new environment without a blob, provide an existing JSONL
+snapshot explicitly:
+
+```bash
+SEED_FILE=/path/to/game-data.jsonl ./deploy.sh
+```
+
+After the initial upload, later deployments do not require `SEED_FILE`.
 
 To delete all provisioned resources:
 
