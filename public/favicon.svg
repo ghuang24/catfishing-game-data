@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <style>
+    .fish { fill: #4A90E2; }
+    .eye { fill: #1A1A1A; }
+  </style>
+  <!-- Fish body -->
+  <ellipse class="fish" cx="45" cy="50" rx="30" ry="20"/>
+  <!-- Fish tail -->
+  <path class="fish" d="M 15 50 L 5 35 L 10 50 L 5 65 Z"/>
+  <!-- Fish fins -->
+  <path class="fish" d="M 40 70 L 35 80 L 45 72 Z"/>
+  <path class="fish" d="M 40 30 L 35 20 L 45 28 Z"/>
+  <!-- Dorsal fin -->
+  <path class="fish" d="M 55 35 L 60 25 L 50 38 Z"/>
+  <!-- Eye -->
+  <circle class="eye" cx="60" cy="45" r="3"/>
+</svg>

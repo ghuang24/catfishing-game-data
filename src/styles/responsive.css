@@ -1,0 +1,153 @@
+@media (max-width: 720px) {
+  .page {
+    padding-top: 28px;
+  }
+
+  .report-toolbar {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .header-controls {
+    align-items: stretch;
+  }
+
+  .header-menu-buttons {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .header-menu-button {
+    justify-content: center;
+    padding-inline: 10px;
+  }
+
+  .import-panel {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .all-answers-heading {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+}
+
+@media (max-width: 480px) {
+  .page-header h1 {
+    font-size: 2rem;
+  }
+
+  .header-menu-button {
+    gap: 6px;
+    font-size: 0.9rem;
+  }
+
+  .menu-icon {
+    width: 18px;
+    height: 18px;
+  }
+
+  .header-menu-buttons {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .pagination-controls {
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 12px;
+  }
+
+  .pagination-info {
+    order: -1;
+    flex-basis: 100%;
+    justify-content: center;
+    min-width: 0;
+  }
+
+  .pagination-button {
+    flex: 1 1 0;
+    min-width: 0;
+    padding: 9px 6px;
+  }
+
+  .import-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .all-answers-result {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .article-header {
+    display: grid;
+    grid-template-columns: 20px minmax(0, 1fr) auto auto;
+    align-items: center;
+    gap: 8px;
+    padding: 12px;
+  }
+
+  .article-status {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .article-title {
+    grid-column: 2 / -1;
+    grid-row: 1;
+  }
+
+  .other-appearances {
+    display: inline;
+    margin-left: 6px;
+    white-space: normal;
+  }
+
+  .user-guess {
+    grid-column: 2 / -1;
+    grid-row: 2;
+    min-width: 0;
+    margin-left: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .article-day-link {
+    grid-column: 2;
+    grid-row: 3;
+    justify-self: start;
+  }
+
+  .wikipedia-link {
+    grid-column: 3;
+    grid-row: 2;
+    margin-left: 0;
+  }
+
+  .correct-rate {
+    grid-column: 4;
+    grid-row: 2;
+    min-width: 0;
+  }
+
+  .answer-checkboxes {
+    grid-template-columns: 1fr;
+  }
+
+  .results-table-header {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .results-answer-header {
+    display: none;
+  }
+
+  .results-sort-button,
+  .correct-rate-sort {
+    justify-content: space-between;
+    border-right: 1px solid var(--border);
+  }
+}

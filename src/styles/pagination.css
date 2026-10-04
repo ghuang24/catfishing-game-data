@@ -1,0 +1,87 @@
+.pagination-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin-top: 40px;
+  margin-bottom: 40px;
+  padding: 20px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.pagination-button {
+  padding: 10px 20px;
+  background: var(--accent-deep);
+  color: var(--accent-soft);
+  border: none;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.2s, background-color 0.2s;
+}
+
+.pagination-button:hover:not(:disabled) {
+  background: var(--border);
+}
+
+.pagination-button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.pagination-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: "Courier New", Courier, monospace;
+  color: var(--accent);
+  font-weight: 500;
+  font-size: 1rem;
+}
+
+.page-label {
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+.page-input {
+  width: 60px;
+  padding: 6px 8px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 1rem;
+  text-align: center;
+  background: var(--bg);
+  color: var(--accent);
+  font-weight: 500;
+}
+
+.page-input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+/* Remove spinners from number input */
+.page-input::-webkit-inner-spin-button,
+.page-input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.page-input[type=number] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+/* Raw data container */
+#raw-data-container {
+  min-height: 60vh;
+  display: flex;
+  flex-direction: column;
+}
+

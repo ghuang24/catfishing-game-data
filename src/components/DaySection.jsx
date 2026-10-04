@@ -1,0 +1,50 @@
+import ArticleSection from './ArticleSection';
+
+function DaySection({
+  dayData,
+  scoreData,
+  appearanceDaysByTitle,
+  highlightQuery,
+  renderHighlight,
+  onSelectDay
+}) {
+  return (
+    <section className="day-section">
+      <h1 className="day-header">
+        <a href={`https://catfishing.net/game/${dayData.day}`} target="_blank" rel="noopener noreferrer">
+          Day {dayData.day}
+        </a>
+        {scoreData && (
+          <span className="day-score">
+            Score: {scoreData.score}
+          </span>
+        )}
+        {dayData.stats?.scoresMean !== undefined && (
+          <span className="day-score">
+            Avg: {dayData.stats.scoresMean.toFixed(1)}
+          </span>
+        )}
+      </h1>
+      <div className="articles-container">
+        {dayData.data.map((article, index) => {
+          const origIndex = article.originalIndex !== undefined ? article.originalIndex : index;
+          const answerData = scoreData?.answers?.[origIndex];
+          return (
+            <ArticleSection 
+              key={index} 
+              article={article}
+              answerData={answerData}
+              appearanceDays={appearanceDaysByTitle.get(article.title.trim().toLowerCase())}
+              currentDay={dayData.day}
+              highlightQuery={highlightQuery}
+              renderHighlight={renderHighlight}
+              onSelectDay={onSelectDay}
+            />
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
+export default DaySection;
