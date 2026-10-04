@@ -38,7 +38,10 @@ function App() {
   useEffect(() => {
     async function loadData() {
       try {
-        const response = await fetch('/data/game-data.jsonl');
+        const dataUrl =
+          import.meta.env.VITE_GAME_DATA_URL ||
+          `${import.meta.env.BASE_URL}data/game-data.jsonl`;
+        const response = await fetch(dataUrl);
         if (!response.ok) {
           throw new Error(`Shared game data could not be loaded (${response.status}).`);
         }

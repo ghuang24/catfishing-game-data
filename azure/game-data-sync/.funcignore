@@ -1,0 +1,12 @@
+.git*
+.vscode
+infra/
+test/
+src/
+dist/test/
+local.settings.json
+local.settings.json.example
+deploy.sh
+README.md
+tsconfig.json
+*.local
