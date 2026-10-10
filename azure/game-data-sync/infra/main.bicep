@@ -9,6 +9,27 @@ param location string = resourceGroup().location
 @description('Allowed browser origin for Blob Storage CORS. Use * only for intentionally public data.')
 param allowedOrigin string = '*'
 
+@description('Maximum Catfishing API requests made by one synchronization run.')
+@minValue(2)
+param syncMaxRequests int = 25
+
+@description('Minimum delay in milliseconds between Catfishing API request starts.')
+@minValue(100)
+param syncRequestIntervalMs int = 2000
+
+@description('Timeout in milliseconds for one Catfishing API request.')
+@minValue(1000)
+param syncRequestTimeoutMs int = 20000
+
+@description('Maximum retry count for transient Catfishing API failures.')
+@minValue(0)
+param syncMaxRetries int = 4
+
+@description('Synchronization work budget in milliseconds, below the Function timeout.')
+@minValue(60000)
+@maxValue(540000)
+param syncExecutionBudgetMs int = 480000
+
 var token = toLower(uniqueString(subscription().subscriptionId, resourceGroup().id, baseName))
 var runtimeStorageName = take('stfn${token}', 24)
 var dataStorageName = take('stdata${token}', 24)
@@ -268,6 +289,26 @@ resource functionApp 'Microsoft.Web/sites@2024-11-01' = {
         {
           name: 'FUNCTIONS_EXTENSION_VERSION'
           value: '~4'
+        }
+        {
+          name: 'SYNC_EXECUTION_BUDGET_MS'
+          value: string(syncExecutionBudgetMs)
+        }
+        {
+          name: 'SYNC_MAX_REQUESTS'
+          value: string(syncMaxRequests)
+        }
+        {
+          name: 'SYNC_MAX_RETRIES'
+          value: string(syncMaxRetries)
+        }
+        {
+          name: 'SYNC_REQUEST_INTERVAL_MS'
+          value: string(syncRequestIntervalMs)
+        }
+        {
+          name: 'SYNC_REQUEST_TIMEOUT_MS'
+          value: string(syncRequestTimeoutMs)
         }
       ]
       ftpsState: 'Disabled'

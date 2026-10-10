@@ -16,6 +16,28 @@ const requiredSetting = (name: string): string => {
   return value;
 };
 
+const positiveIntegerSetting = (name: string, defaultValue: number): number => {
+  const rawValue = process.env[name];
+  if (rawValue === undefined) return defaultValue;
+
+  const value = Number(rawValue);
+  if (!Number.isSafeInteger(value) || value <= 0) {
+    throw new Error(`${name} must be a positive integer.`);
+  }
+  return value;
+};
+
+const nonNegativeIntegerSetting = (name: string, defaultValue: number): number => {
+  const rawValue = process.env[name];
+  if (rawValue === undefined) return defaultValue;
+
+  const value = Number(rawValue);
+  if (!Number.isSafeInteger(value) || value < 0) {
+    throw new Error(`${name} must be a non-negative integer.`);
+  }
+  return value;
+};
+
 const streamToBuffer = async (stream: NodeJS.ReadableStream): Promise<Buffer> => {
   const chunks: Buffer[] = [];
   for await (const chunk of stream) {
@@ -47,7 +69,27 @@ export const synchronizeBlob = async (
   const content = download.contentEncoding === "gzip"
     ? (await gunzipAsync(body)).toString("utf8")
     : body.toString("utf8");
-  const update = await updateGameData({ content, appendNext });
+  const update = await updateGameData({
+    content,
+    appendNext,
+    maxRequests: positiveIntegerSetting("SYNC_MAX_REQUESTS", 25),
+    requestIntervalMs: positiveIntegerSetting("SYNC_REQUEST_INTERVAL_MS", 2000),
+    requestTimeoutMs: positiveIntegerSetting("SYNC_REQUEST_TIMEOUT_MS", 20_000),
+    maxRetries: nonNegativeIntegerSetting("SYNC_MAX_RETRIES", 4),
+    executionBudgetMs: positiveIntegerSetting("SYNC_EXECUTION_BUDGET_MS", 480_000)
+  });
+
+  for (const failure of update.failedDays) {
+    context.warn(`Game data refresh failed for day ${failure.day}: ${failure.error}`);
+  }
+
+  if (update.refreshedDays.length === 0 && update.appendedDay === null) {
+    throw new Error(
+      `Game data sync completed without a successful refresh.` +
+      (update.stoppedReason ? ` Stopped because of ${update.stoppedReason}.` : "")
+    );
+  }
+
   const compressed = await gzipAsync(Buffer.from(update.content, "utf8"), {
     level: 9
   });
@@ -63,9 +105,13 @@ export const synchronizeBlob = async (
     }
   });
 
-  context.log(
-    update.appendedDay === null
-      ? `Refreshed game data for day ${update.refreshedDay}.`
-      : `Refreshed day ${update.refreshedDay} and added day ${update.appendedDay}.`
-  );
+  context.log("Game data sync completed.", {
+    appendedDay: update.appendedDay,
+    attemptedDayCount: update.attemptedDays.length,
+    failedDayCount: update.failedDays.length,
+    refreshedDayCount: update.refreshedDays.length,
+    requestCount: update.requestCount,
+    retryCount: update.retryCount,
+    stoppedReason: update.stoppedReason
+  });
 };

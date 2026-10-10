@@ -5,11 +5,32 @@ to keep the public Catfishing game-data blob current.
 
 ## Schedule
 
-- `10:15 UTC`: refresh the latest stored day and append the next day.
-- `22:15 UTC`: refresh only the latest stored day.
+- `10:15 UTC`: refresh the latest stored day, append the next day, and refresh
+  an age-prioritized archive batch.
+- `22:15 UTC`: refresh the latest stored day and an age-prioritized archive
+  batch.
 
 The next `10:15 UTC` run performs that day's final refresh while adding the
-newly published game.
+newly published game. Archive records from the last 14 days become eligible
+daily, records from the last 90 days weekly, and older records every 30 days.
+Each run processes at most 25 requests, prioritizing recent tiers and then the
+most overdue records within each tier.
+
+API requests run sequentially with two seconds between request starts. Transient
+network and server failures use capped exponential backoff, while `429`
+responses honor `Retry-After`. Successful records are still published when
+another record fails. The sync stops accepting work after eight minutes so it
+can compress and upload the snapshot before the Function's ten-minute timeout.
+
+The deployed defaults can be changed with these Function App settings:
+
+| Setting | Default | Purpose |
+| --- | ---: | --- |
+| `SYNC_MAX_REQUESTS` | `25` | Maximum selected days per run |
+| `SYNC_REQUEST_INTERVAL_MS` | `2000` | Minimum delay between request starts |
+| `SYNC_REQUEST_TIMEOUT_MS` | `20000` | Timeout for one API request |
+| `SYNC_MAX_RETRIES` | `4` | Retries for network, `429`, and `5xx` failures |
+| `SYNC_EXECUTION_BUDGET_MS` | `480000` | Work deadline before final upload |
 
 ## Deploy
 

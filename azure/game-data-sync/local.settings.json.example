@@ -5,6 +5,11 @@
     "FUNCTIONS_WORKER_RUNTIME": "node",
     "DATA_STORAGE_ACCOUNT_URL": "https://REPLACE_ME.blob.core.windows.net",
     "DATA_CONTAINER_NAME": "data",
-    "DATA_BLOB_NAME": "game-data.jsonl"
+    "DATA_BLOB_NAME": "game-data.jsonl",
+    "SYNC_MAX_REQUESTS": "25",
+    "SYNC_REQUEST_INTERVAL_MS": "2000",
+    "SYNC_REQUEST_TIMEOUT_MS": "20000",
+    "SYNC_MAX_RETRIES": "4",
+    "SYNC_EXECUTION_BUDGET_MS": "480000"
   }
 }
