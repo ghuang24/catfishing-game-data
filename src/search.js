@@ -16,6 +16,8 @@ const STANDALONE_STOP_WORDS = new Set([
   'with'
 ]);
 
+const APOSTROPHES = /['\u2018\u2019\u02bc\uff07]/gu;
+
 export function normalizeSearchText(value) {
   return value
     .normalize('NFD')
@@ -23,11 +25,17 @@ export function normalizeSearchText(value) {
     .toLocaleLowerCase();
 }
 
+function normalizeComparableSearchText(value) {
+  return normalizeSearchText(value).replace(APOSTROPHES, '');
+}
+
 export function isStandaloneStopWord(query) {
-  return STANDALONE_STOP_WORDS.has(normalizeSearchText(query).trim());
+  return STANDALONE_STOP_WORDS.has(normalizeComparableSearchText(query).trim());
 }
 
 export function matchesSearchText(value, query) {
-  return !isStandaloneStopWord(query) &&
-    normalizeSearchText(value).includes(normalizeSearchText(query));
+  const normalizedQuery = normalizeComparableSearchText(query);
+  return normalizedQuery.length > 0 &&
+    !isStandaloneStopWord(normalizedQuery) &&
+    normalizeComparableSearchText(value).includes(normalizedQuery);
 }

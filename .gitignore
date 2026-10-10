@@ -4,3 +4,6 @@ dist/
 *.local
 azure/game-data-sync/local.settings.json
 azure/game-data-sync/dist/
+
+.env.development
+

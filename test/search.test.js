@@ -11,6 +11,15 @@ test('normalizes accents and case for answer searches', () => {
   assert.ok(normalizeSearchText('Škoda Auto').includes(normalizeSearchText('skoda')));
 });
 
+test('matches answers regardless of apostrophe style or omission', () => {
+  const answer = "Who's on First?";
+
+  assert.equal(matchesSearchText(answer, "Who's on first"), true);
+  assert.equal(matchesSearchText(answer, 'Who’s on first'), true);
+  assert.equal(matchesSearchText(answer, 'Whos on first'), true);
+  assert.equal(matchesSearchText(answer, "'"), false);
+});
+
 test('blocks standalone common words but allows them within phrases', () => {
   assert.equal(isStandaloneStopWord('The'), true);
   assert.equal(matchesSearchText('The Room', 'the'), false);
