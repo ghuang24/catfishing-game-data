@@ -4,7 +4,7 @@ import checkCircle from '../Assets/check-circle.svg';
 import closeEnough from '../Assets/close-enough.svg';
 import skipCircle from '../Assets/skip-circle.svg';
 import xCircle from '../Assets/x-circle.svg';
-import { AnswerCorrectness } from '../input.types';
+import { AnswerCorrectness } from '../input.types.ts';
 
 function ArticleSection({
   article,

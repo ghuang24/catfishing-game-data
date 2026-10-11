@@ -3,9 +3,7 @@ function Pagination({
   setCurrentPage,
   pageInput,
   setPageInput,
-  totalPages,
-  itemCount,
-  itemType
+  totalPages
 }) {
   function applyPageInput() {
     const page = Number(pageInput);
@@ -47,7 +45,7 @@ function Pagination({
           className="page-input"
         />
         <span className="page-label">
-          of {totalPages} ({itemCount} {itemType})
+          of {totalPages}
         </span>
       </div>
       <button

@@ -56,19 +56,31 @@ test('rejects invalid and duplicate game records', () => {
   );
 });
 
-test('accepts exports with unfinished games and omits them from normalized scores', () => {
+test('preserves partial and unstarted games without assigning a score', () => {
   const parsed = parseExportText(JSON.stringify(makeExport([
     [32, { a: [{ r: 0, g: 'Partial guess' }] }],
     [33, { c: null, a: [] }],
     [34, { c: [1, 0], a: [{ r: 2, g: 'Finished guess' }] }]
   ])));
 
-  assert.deepEqual(normalizeScores(parsed, 'now'), [{
-    day: 34,
-    processedAt: 'now',
-    score: 1,
-    answers: [{ correctness: 2, guess: 'Finished guess' }]
-  }]);
+  assert.deepEqual(normalizeScores(parsed, 'now'), [
+    {
+      day: 32,
+      processedAt: 'now',
+      answers: [{ correctness: 0, guess: 'Partial guess' }]
+    },
+    {
+      day: 33,
+      processedAt: 'now',
+      answers: []
+    },
+    {
+      day: 34,
+      processedAt: 'now',
+      score: 1,
+      answers: [{ correctness: 2, guess: 'Finished guess' }]
+    }
+  ]);
 });
 
 test('new imports replace matching days and retain other history', () => {

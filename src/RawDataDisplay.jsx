@@ -16,6 +16,7 @@ import { getHighlightSegments } from './utils';
 function RawDataDisplay({ data, scoresData }) {
   const [dayFilter, setDayFilter] = useState('');
   const [dateRange, setDateRange] = useState(null);
+  const [showUnplayed, setShowUnplayed] = useState(true);
   const [searchInput, setSearchInput] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [articleSortBy, setArticleSortBy] = useState('none');
@@ -26,7 +27,6 @@ function RawDataDisplay({ data, scoresData }) {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageInput, setPageInput] = useState('1');
   const [showPageRails, setShowPageRails] = useState(false);
-  const topPaginationRef = useRef(null);
   const bottomPaginationRef = useRef(null);
 
   useEffect(() => {
@@ -41,6 +41,7 @@ function RawDataDisplay({ data, scoresData }) {
   }, [
     dayFilter,
     dateRange,
+    showUnplayed,
     searchQuery,
     articleSortBy,
     daySortBy,
@@ -67,6 +68,7 @@ function RawDataDisplay({ data, scoresData }) {
     scoresData,
     dayFilter,
     dateRange,
+    showUnplayed,
     searchQuery,
     showHidden,
     answerFilters,
@@ -82,19 +84,15 @@ function RawDataDisplay({ data, scoresData }) {
   } = summarizeReportData({ data, scoresData, filteredData, articleSortBy });
   const {
     paginatedData,
-    totalPages,
-    totalArticles: totalFilteredArticles
+    totalPages
   } = paginateReportData(filteredData, articleSortBy, currentPage);
   const totalArticles = data.reduce((sum, day) => sum + day.data.length, 0);
 
   useEffect(() => {
     function updatePageRailVisibility() {
-      const topPagination = topPaginationRef.current;
       const bottomPagination = bottomPaginationRef.current;
       setShowPageRails(Boolean(
-        topPagination &&
         bottomPagination &&
-        topPagination.getBoundingClientRect().bottom < 0 &&
         bottomPagination.getBoundingClientRect().top > window.innerHeight
       ));
     }
@@ -106,13 +104,14 @@ function RawDataDisplay({ data, scoresData }) {
       window.removeEventListener('scroll', updatePageRailVisibility);
       window.removeEventListener('resize', updatePageRailVisibility);
     };
-  }, [totalPages]);
+  }, [totalPages, currentPage, filteredDays, filteredArticles]);
 
   function clearAllFilters() {
     setSearchInput('');
     setSearchQuery('');
     setDayFilter('');
     setDateRange(null);
+    setShowUnplayed(true);
     setShowHidden(false);
     setAnswerFilters([]);
     setCorrectRateFilter('');
@@ -152,9 +151,7 @@ function RawDataDisplay({ data, scoresData }) {
     setCurrentPage,
     pageInput,
     setPageInput,
-    totalPages,
-    itemCount: totalFilteredArticles,
-    itemType: 'answers'
+    totalPages
   };
   const filterProps = {
     searchInput,
@@ -163,6 +160,8 @@ function RawDataDisplay({ data, scoresData }) {
     setDayFilter,
     dateRange,
     setDateRange,
+    showUnplayed,
+    setShowUnplayed,
     showHidden,
     setShowHidden,
     answerFilters,
@@ -189,9 +188,6 @@ function RawDataDisplay({ data, scoresData }) {
         setCurrentPage={setCurrentPage}
         isVisible={showPageRails}
       />
-      <div ref={topPaginationRef}>
-        <Pagination {...paginationProps} />
-      </div>
       <ResultsSortHeader
         articleSortBy={articleSortBy}
         daySortBy={daySortBy}

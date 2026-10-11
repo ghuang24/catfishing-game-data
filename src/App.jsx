@@ -4,6 +4,7 @@ import ImportPanel from './components/ImportPanel.jsx';
 import PageHeader from './components/PageHeader.jsx';
 import RawDataDisplay from './RawDataDisplay.jsx';
 import { mergeScores, normalizeScores, readGzipExport } from './exportData.js';
+import { selectVisibleReportData } from './reportVisibility.js';
 import {
   clearScores,
   loadImportDevice,
@@ -60,21 +61,16 @@ function App() {
     loadData();
   }, []);
 
-  const { visibleGameData, visibleScores } = useMemo(() => {
-    const scoresByDay = new Map(scores.map(score => [score.day, score]));
-    const visibleGames = gameData.filter(dayData => scoresByDay.has(dayData.day));
-    return {
-      visibleGameData: visibleGames,
-      visibleScores: visibleGames.map(dayData => scoresByDay.get(dayData.day))
-    };
-  }, [gameData, scores]);
+  const { visibleGameData, visibleScores } = useMemo(
+    () => selectVisibleReportData(gameData, scores),
+    [gameData, scores]
+  );
 
   async function importExport(file) {
     const exportData = await readGzipExport(file);
     const importedScores = normalizeScores(exportData);
-    const skippedCount = exportData.games.length - importedScores.length;
     if (importedScores.length === 0) {
-      throw new Error('This export does not contain any completed games.');
+      throw new Error('This export does not contain any game history.');
     }
 
     const importDevice = exportData.meta.device;
@@ -85,7 +81,7 @@ function App() {
         ? 'This export was created on a different device and may belong to another account.'
         : 'The source of the currently saved data cannot be verified.';
       const confirmed = window.confirm(
-        `${sourceWarning}\n\nContinuing will replace ${scores.length} saved completed ` +
+        `${sourceWarning}\n\nContinuing will replace ${scores.length} saved ` +
         `day${scores.length === 1 ? '' : 's'} with ${importedScores.length} from this export.`
       );
       if (!confirmed) {
@@ -102,7 +98,7 @@ function App() {
     return {
       cancelled: false,
       importedCount: importedScores.length,
-      skippedCount,
+      skippedCount: 0,
       replaced: replacesExistingData
     };
   }

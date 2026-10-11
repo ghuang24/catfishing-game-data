@@ -1,4 +1,17 @@
 import { useRef, useState } from 'react';
+import {
+  loadHistoryCollapsed,
+  saveHistoryCollapsed
+} from '../uiPreferences.js';
+
+function initialCollapsedState() {
+  try {
+    return loadHistoryCollapsed();
+  } catch (error) {
+    console.error('Failed to load game history panel preference:', error);
+    return false;
+  }
+}
 
 function ImportPanel({ scores, onImport, onClear }) {
   const inputRef = useRef(null);
@@ -6,6 +19,7 @@ function ImportPanel({ scores, onImport, onClear }) {
   const [isImporting, setIsImporting] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [message, setMessage] = useState(null);
+  const [isCollapsed, setIsCollapsed] = useState(initialCollapsedState);
 
   const latestDay = scores.reduce((latest, score) => Math.max(latest, score.day), 0);
 
@@ -86,56 +100,90 @@ function ImportPanel({ scores, onImport, onClear }) {
     setMessage({ type: 'success', text: 'Saved score data was removed.' });
   }
 
+  function toggleCollapsed() {
+    const nextValue = !isCollapsed;
+    try {
+      saveHistoryCollapsed(nextValue);
+      setIsCollapsed(nextValue);
+      setIsDragging(false);
+      dragDepthRef.current = 0;
+    } catch (error) {
+      console.error('Failed to save game history panel preference:', error);
+    }
+  }
+
   return (
     <section
-      className={`import-panel ${isDragging ? 'is-dragging' : ''}`}
+      className={`import-panel ${isCollapsed ? 'is-collapsed' : ''} ${
+        isDragging ? 'is-dragging' : ''
+      }`}
       aria-labelledby="import-title"
-      onDragEnter={handleDragEnter}
-      onDragOver={handleDragOver}
-      onDragLeave={handleDragLeave}
-      onDrop={handleDrop}
+      onDragEnter={isCollapsed ? undefined : handleDragEnter}
+      onDragOver={isCollapsed ? undefined : handleDragOver}
+      onDragLeave={isCollapsed ? undefined : handleDragLeave}
+      onDrop={isCollapsed ? undefined : handleDrop}
     >
-      <div>
+      <div className="import-panel-heading">
         <h2 id="import-title">Your game history</h2>
-        <p>
-          Import a Catfishing gzip export to unlock completed days. The file is processed
-          locally and your scores stay in this browser. Re-upload a newer export at any time
-          to update your saved data.
-        </p>
-        <span className="drop-hint">Choose a file or drag and drop a .gz export here.</span>
-        {scores.length > 0 && (
-          <span className="import-summary">
-            {scores.length} completed days saved · Latest: Day {latestDay}
-          </span>
-        )}
-        {message && (
-          <p className={`import-message ${message.type}`} role="status">
-            {message.text}
-          </p>
-        )}
-      </div>
-      <div className="import-actions">
-        <input
-          ref={inputRef}
-          type="file"
-          accept=".gz,application/gzip"
-          onChange={handleFile}
-          className="visually-hidden"
-        />
         <button
           type="button"
-          className="import-button"
-          onClick={() => inputRef.current?.click()}
-          disabled={isImporting}
+          className="import-collapse-button"
+          onClick={toggleCollapsed}
+          aria-expanded={!isCollapsed}
+          aria-controls="import-panel-content"
+          aria-label={isCollapsed ? 'Expand game history' : 'Minimize game history'}
+          title={isCollapsed ? 'Expand game history' : 'Minimize game history'}
         >
-          {isImporting ? 'Importing…' : 'Import Catfishing stats'}
+          <span
+            className={`import-collapse-chevron ${isCollapsed ? 'is-collapsed' : ''}`}
+            aria-hidden="true"
+          ></span>
         </button>
-        {scores.length > 0 && (
-          <button type="button" className="clear-data-button" onClick={handleClear}>
-            Clear local data
-          </button>
-        )}
       </div>
+      {!isCollapsed && (
+        <div className="import-panel-content" id="import-panel-content">
+          <div>
+            <p>
+              Import a Catfishing gzip export to unlock completed days. The file is processed
+              locally and your scores stay in this browser. Re-upload a newer export at any time
+              to update your saved data.
+            </p>
+            <span className="drop-hint">Choose a file or drag and drop a .gz export here.</span>
+            {scores.length > 0 && (
+              <span className="import-summary">
+                {scores.length} completed days saved · Latest: Day {latestDay}
+              </span>
+            )}
+            {message && (
+              <p className={`import-message ${message.type}`} role="status">
+                {message.text}
+              </p>
+            )}
+          </div>
+          <div className="import-actions">
+            <input
+              ref={inputRef}
+              type="file"
+              accept=".gz,application/gzip"
+              onChange={handleFile}
+              className="visually-hidden"
+            />
+            <button
+              type="button"
+              className="import-button"
+              onClick={() => inputRef.current?.click()}
+              disabled={isImporting}
+            >
+              {isImporting ? 'Importing…' : 'Import Catfishing stats'}
+            </button>
+            {scores.length > 0 && (
+              <button type="button" className="clear-data-button" onClick={handleClear}>
+                Clear local data
+              </button>
+            )}
+          </div>
+        </div>
+      )}
     </section>
   );
 }

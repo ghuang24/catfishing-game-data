@@ -1,4 +1,3 @@
-import { ReactNode } from 'react';
 import { normalizeSearchText } from './search.js';
 
 interface TextSegment {
@@ -75,7 +74,7 @@ export function matchesWordStart(title: string, query: string): boolean {
   // If single word query, check if any word starts with it
   if (queryWords.length === 1) {
     const words = titleLower.split(/\s+/);
-    return words.some(word => word.startsWith(queryLower));
+    return words.some((word: string) => word.startsWith(queryLower));
   }
   
   // For multi-word queries, check if consecutive words match

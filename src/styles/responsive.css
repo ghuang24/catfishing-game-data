@@ -22,7 +22,7 @@
     padding-inline: 10px;
   }
 
-  .import-panel {
+  .import-panel-content {
     align-items: stretch;
     flex-direction: column;
   }

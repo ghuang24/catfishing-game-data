@@ -28,6 +28,8 @@ function FiltersPanel({
   setDayFilter,
   dateRange,
   setDateRange,
+  showUnplayed,
+  setShowUnplayed,
   showHidden,
   setShowHidden,
   answerFilters,
@@ -98,6 +100,7 @@ function FiltersPanel({
     searchInput.trim() ||
     dayFilter.trim() ||
     dateRange ||
+    !showUnplayed ||
     showHidden ||
     answerFilters.length ||
     correctRateFilter.trim()
@@ -108,7 +111,11 @@ function FiltersPanel({
       <div className="header-menu-buttons" role="group" aria-label="Data filters">
         {[
           { id: 'search', label: 'Search', isActive: Boolean(searchInput.trim()) },
-          { id: 'date', label: 'Date', isActive: Boolean(dayFilter.trim() || dateRange) },
+          {
+            id: 'date',
+            label: 'Date',
+            isActive: Boolean(dayFilter.trim() || dateRange || !showUnplayed)
+          },
           { id: 'filters', label: 'Filters' }
         ].map(menu => (
           <button
@@ -197,6 +204,15 @@ function FiltersPanel({
                 className="menu-search-input"
                 autoComplete="off"
               />
+              <div className="menu-divider"></div>
+              <label className="menu-checkbox">
+                <input
+                  type="checkbox"
+                  checked={showUnplayed}
+                  onChange={(event) => setShowUnplayed(event.target.checked)}
+                />
+                <span>Show unplayed days</span>
+              </label>
             </>
           )}
 

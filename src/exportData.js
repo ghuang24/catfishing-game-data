@@ -75,11 +75,12 @@ export function parseExportText(content, fileName = 'export') {
 
 export function normalizeScores(exportData, processedAt = new Date().toISOString()) {
   return exportData.games
-    .filter(([, game]) => Array.isArray(game.c))
     .map(([day, game]) => ({
       day,
       processedAt,
-      score: game.c[0] + game.c[1] * 0.5,
+      ...(Array.isArray(game.c)
+        ? { score: game.c[0] + game.c[1] * 0.5 }
+        : {}),
       answers: game.a.map(answer => ({
         correctness: answer.r,
         ...(answer.g === undefined ? {} : { guess: answer.g })

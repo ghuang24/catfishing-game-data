@@ -6,8 +6,10 @@ function isStoredScore(value) {
     typeof value === 'object' &&
     value !== null &&
     Number.isInteger(value.day) &&
-    typeof value.score === 'number' &&
-    Number.isFinite(value.score) &&
+    (
+      value.score === undefined ||
+      (typeof value.score === 'number' && Number.isFinite(value.score))
+    ) &&
     Array.isArray(value.answers) &&
     value.answers.every(answer =>
       typeof answer === 'object' &&

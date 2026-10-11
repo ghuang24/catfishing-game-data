@@ -8,13 +8,15 @@ function DaySection({
   renderHighlight,
   onSelectDay
 }) {
+  const hasAnsweredQuestions = dayData.data.length > 0;
+
   return (
     <section className="day-section">
       <h1 className="day-header">
         <a href={`https://catfishing.net/game/${dayData.day}`} target="_blank" rel="noopener noreferrer">
           Day {dayData.day}
         </a>
-        {scoreData && (
+        {Number.isFinite(scoreData?.score) && hasAnsweredQuestions && (
           <span className="day-score">
             Score: {scoreData.score}
           </span>
@@ -25,24 +27,26 @@ function DaySection({
           </span>
         )}
       </h1>
-      <div className="articles-container">
-        {dayData.data.map((article, index) => {
-          const origIndex = article.originalIndex !== undefined ? article.originalIndex : index;
-          const answerData = scoreData?.answers?.[origIndex];
-          return (
-            <ArticleSection 
-              key={index} 
-              article={article}
-              answerData={answerData}
-              appearanceDays={appearanceDaysByTitle.get(article.title.trim().toLowerCase())}
-              currentDay={dayData.day}
-              highlightQuery={highlightQuery}
-              renderHighlight={renderHighlight}
-              onSelectDay={onSelectDay}
-            />
-          );
-        })}
-      </div>
+      {hasAnsweredQuestions && (
+        <div className="articles-container">
+          {dayData.data.map((article, index) => {
+            const origIndex = article.originalIndex !== undefined ? article.originalIndex : index;
+            const answerData = scoreData?.answers?.[origIndex];
+            return (
+              <ArticleSection
+                key={origIndex}
+                article={article}
+                answerData={answerData}
+                appearanceDays={appearanceDaysByTitle.get(article.title.trim().toLowerCase())}
+                currentDay={dayData.day}
+                highlightQuery={highlightQuery}
+                renderHighlight={renderHighlight}
+                onSelectDay={onSelectDay}
+              />
+            );
+          })}
+        </div>
+      )}
     </section>
   );
 }
