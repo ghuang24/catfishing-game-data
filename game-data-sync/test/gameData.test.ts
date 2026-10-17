@@ -79,11 +79,13 @@ test("selects the latest day and overdue records by age tier", () => {
 
 test("refreshes the latest day and appends the next day", async () => {
   const requestedUrls: string[] = [];
+  const requestedUserAgents: Array<string | null> = [];
   const result = await updateGameData({
     content: serialize([makeRecord(12, "2026-10-03T10:15:00.000Z")]),
     appendNext: true,
-    fetchImpl: async (url) => {
+    fetchImpl: async (url, init) => {
       requestedUrls.push(url);
+      requestedUserAgents.push(new Headers(init?.headers).get("user-agent"));
       return successfulResponse();
     },
     now: () => new Date("2026-10-04T10:15:00.000Z"),
@@ -92,8 +94,12 @@ test("refreshes the latest day and appends the next day", async () => {
   });
 
   assert.deepEqual(requestedUrls, [
-    "https://catfishing.net/api/game?day=12",
-    "https://catfishing.net/api/game?day=13"
+    "https://catfishing.net/app/game?day=12",
+    "https://catfishing.net/app/game?day=13"
+  ]);
+  assert.deepEqual(requestedUserAgents, [
+    "catfishing-game-data-sync (+https://github.com/ghuang24/catfishing-game-data)",
+    "catfishing-game-data-sync (+https://github.com/ghuang24/catfishing-game-data)"
   ]);
   assert.deepEqual(result.refreshedDays, [12]);
   assert.equal(result.appendedDay, 13);
@@ -117,7 +123,7 @@ test("refreshes only the latest day when no archive records are due", async () =
   });
 
   assert.deepEqual(requestedUrls, [
-    "https://catfishing.net/api/game?day=12"
+    "https://catfishing.net/app/game?day=12"
   ]);
   assert.deepEqual(result.refreshedDays, [12]);
   assert.equal(result.appendedDay, null);

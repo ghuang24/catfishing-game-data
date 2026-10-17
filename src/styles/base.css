@@ -231,3 +231,9 @@ select {
   margin: 0 auto;
   color: var(--accent-soft);
 }
+
+.section-divider {
+  margin: 48px 0;
+  border: 0;
+  border-top: 1px solid var(--border);
+}

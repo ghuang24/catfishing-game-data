@@ -4,7 +4,7 @@
   align-items: center;
   gap: 12px;
   margin-top: 40px;
-  margin-bottom: 40px;
+  margin-bottom: 0;
   padding: 20px;
   background: var(--panel);
   border: 1px solid var(--border);
@@ -80,8 +80,6 @@
 
 /* Raw data container */
 #raw-data-container {
-  min-height: 60vh;
   display: flex;
   flex-direction: column;
 }
-

@@ -1,8 +1,10 @@
 node_modules/
 dist/
+/data/
+/scripts/
 .DS_Store
 *.local
-azure/game-data-sync/local.settings.json
-azure/game-data-sync/dist/
+game-data-sync/local.settings.json
+game-data-sync/dist/
 
 .env.development

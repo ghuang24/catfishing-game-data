@@ -141,6 +141,7 @@ function App() {
       ) : (
         <RawDataDisplay data={visibleGameData} scoresData={visibleScores} />
       )}
+      <hr className="section-divider" />
       <AllAnswersSearch gameData={gameData} />
     </main>
   );

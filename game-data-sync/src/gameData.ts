@@ -40,7 +40,7 @@ type FetchResponse = {
 
 export type FetchGameData = (
   url: string,
-  init?: { signal?: AbortSignal }
+  init?: Pick<RequestInit, "headers" | "signal">
 ) => Promise<FetchResponse>;
 
 type RefreshFailure = {
@@ -60,7 +60,9 @@ export type GameDataUpdate = {
 };
 
 const DAY_MS = 24 * 60 * 60 * 1000;
-const API_URL = "https://catfishing.net/api/game";
+const API_URL = "https://catfishing.net/app/game";
+const API_USER_AGENT =
+  "catfishing-game-data-sync (+https://github.com/ghuang24/catfishing-game-data)";
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === "object" && value !== null;
@@ -282,6 +284,9 @@ const fetchGameRecord = async (
     let response: FetchResponse;
     try {
       response = await fetchImpl(`${API_URL}?day=${day}`, {
+        headers: {
+          "user-agent": API_USER_AGENT
+        },
         signal: controller.signal
       });
     } catch (error) {

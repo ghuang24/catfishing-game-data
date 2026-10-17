@@ -9,7 +9,7 @@
       "isBackground": true,
       "dependsOn": "npm watch (functions)",
       "options": {
-        "cwd": "${workspaceFolder}/azure/game-data-sync"
+        "cwd": "${workspaceFolder}/game-data-sync"
       }
     },
     {
@@ -19,7 +19,7 @@
       "dependsOn": "npm install (functions)",
       "problemMatcher": "$tsc",
       "options": {
-        "cwd": "${workspaceFolder}/azure/game-data-sync"
+        "cwd": "${workspaceFolder}/game-data-sync"
       }
     },
     {
@@ -34,7 +34,7 @@
       },
       "isBackground": true,
       "options": {
-        "cwd": "${workspaceFolder}/azure/game-data-sync"
+        "cwd": "${workspaceFolder}/game-data-sync"
       }
     },
     {
@@ -42,7 +42,7 @@
       "label": "npm install (functions)",
       "command": "npm install",
       "options": {
-        "cwd": "${workspaceFolder}/azure/game-data-sync"
+        "cwd": "${workspaceFolder}/game-data-sync"
       }
     },
     {
@@ -52,7 +52,7 @@
       "dependsOn": "npm build (functions)",
       "problemMatcher": [],
       "options": {
-        "cwd": "${workspaceFolder}/azure/game-data-sync"
+        "cwd": "${workspaceFolder}/game-data-sync"
       }
     }
   ]

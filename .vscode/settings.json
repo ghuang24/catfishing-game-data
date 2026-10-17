@@ -1,9 +1,9 @@
 {
-    "azureFunctions.deploySubpath": "azure/game-data-sync",
+    "azureFunctions.deploySubpath": "game-data-sync",
     "azureFunctions.postDeployTask": "npm install (functions)",
     "azureFunctions.projectLanguage": "TypeScript",
     "azureFunctions.projectRuntime": "~4",
     "azureFunctions.projectLanguageModel": 4,
-    "azureFunctions.projectSubpath": "azure/game-data-sync",
+    "azureFunctions.projectSubpath": "game-data-sync",
     "azureFunctions.preDeployTask": "npm prune (functions)"
 }

@@ -1,5 +1,5 @@
 .all-answers-search {
-  margin-top: 40px;
+  margin-top: 0;
   padding: 20px;
   border: 1px solid var(--border);
   border-radius: 14px;
@@ -133,4 +133,3 @@
   white-space: nowrap;
   border: 0;
 }
-

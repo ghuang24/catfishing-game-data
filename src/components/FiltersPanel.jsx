@@ -100,7 +100,7 @@ function FiltersPanel({
     searchInput.trim() ||
     dayFilter.trim() ||
     dateRange ||
-    !showUnplayed ||
+    showUnplayed ||
     showHidden ||
     answerFilters.length ||
     correctRateFilter.trim()
@@ -114,7 +114,7 @@ function FiltersPanel({
           {
             id: 'date',
             label: 'Date',
-            isActive: Boolean(dayFilter.trim() || dateRange || !showUnplayed)
+            isActive: Boolean(dayFilter.trim() || dateRange || showUnplayed)
           },
           { id: 'filters', label: 'Filters' }
         ].map(menu => (

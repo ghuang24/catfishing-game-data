@@ -16,7 +16,7 @@ import { getHighlightSegments } from './utils';
 function RawDataDisplay({ data, scoresData }) {
   const [dayFilter, setDayFilter] = useState('');
   const [dateRange, setDateRange] = useState(null);
-  const [showUnplayed, setShowUnplayed] = useState(true);
+  const [showUnplayed, setShowUnplayed] = useState(false);
   const [searchInput, setSearchInput] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [articleSortBy, setArticleSortBy] = useState('none');
@@ -111,7 +111,7 @@ function RawDataDisplay({ data, scoresData }) {
     setSearchQuery('');
     setDayFilter('');
     setDateRange(null);
-    setShowUnplayed(true);
+    setShowUnplayed(false);
     setShowHidden(false);
     setAnswerFilters([]);
     setCorrectRateFilter('');
