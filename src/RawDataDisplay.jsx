@@ -11,6 +11,7 @@ import {
   paginateReportData,
   summarizeReportData
 } from './reportData.js';
+import { getArrowKeyPage } from './paginationKeyboard.js';
 import { getHighlightSegments } from './utils';
 
 function RawDataDisplay({ data, scoresData }) {
@@ -87,6 +88,40 @@ function RawDataDisplay({ data, scoresData }) {
     totalPages
   } = paginateReportData(filteredData, articleSortBy, currentPage);
   const totalArticles = data.reduce((sum, day) => sum + day.data.length, 0);
+
+  useEffect(() => {
+    function changePageWithArrowKey(event) {
+      if (
+        event.defaultPrevented ||
+        event.altKey ||
+        event.ctrlKey ||
+        event.metaKey ||
+        event.shiftKey
+      ) {
+        return;
+      }
+
+      const target = event.target;
+      if (
+        target instanceof HTMLElement &&
+        (target.isContentEditable ||
+          target.tagName === 'INPUT' ||
+          target.tagName === 'TEXTAREA' ||
+          target.tagName === 'SELECT')
+      ) {
+        return;
+      }
+
+      const nextPage = getArrowKeyPage(event.key, currentPage, totalPages);
+      if (nextPage !== currentPage) {
+        event.preventDefault();
+        setCurrentPage(nextPage);
+      }
+    }
+
+    window.addEventListener('keydown', changePageWithArrowKey);
+    return () => window.removeEventListener('keydown', changePageWithArrowKey);
+  }, [currentPage, totalPages]);
 
   useEffect(() => {
     function updatePageRailVisibility() {

@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { getGameDate, isGameDayUnlocked } from '../src/gameDate.js';
+import { formatGameDate, getGameDate, isGameDayUnlocked } from '../src/gameDate.js';
 
 test('derives game dates from the day 32 local-calendar anchor', () => {
   const day32 = getGameDate(32);
@@ -24,6 +24,11 @@ test('derives game dates from the day 32 local-calendar anchor', () => {
     [day840.getFullYear(), day840.getMonth(), day840.getDate()],
     [2026, 9, 11]
   );
+});
+
+test('formats game dates for display', () => {
+  assert.equal(formatGameDate(32), 'Jul 25, 2024');
+  assert.equal(formatGameDate(838), 'Oct 9, 2026');
 });
 
 test('unlocks a game at the start of its local calendar day', () => {

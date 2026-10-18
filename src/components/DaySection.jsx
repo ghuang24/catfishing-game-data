@@ -1,4 +1,5 @@
 import ArticleSection from './ArticleSection';
+import { formatGameDate } from '../gameDate.js';
 
 function DaySection({
   dayData,
@@ -16,6 +17,9 @@ function DaySection({
         <a href={`https://catfishing.net/game/${dayData.day}`} target="_blank" rel="noopener noreferrer">
           Day {dayData.day}
         </a>
+        <span className="day-date">
+          {formatGameDate(dayData.day)}
+        </span>
         {Number.isFinite(scoreData?.score) && hasAnsweredQuestions && (
           <span className="day-score">
             Score: {scoreData.score}

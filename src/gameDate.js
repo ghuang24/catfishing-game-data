@@ -15,6 +15,14 @@ export function getGameDate(day) {
   );
 }
 
+export function formatGameDate(day) {
+  return getGameDate(day).toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric'
+  });
+}
+
 export function isGameDayUnlocked(day, currentTime = new Date()) {
   const gameDate = getGameDate(day);
   const localToday = new Date(
