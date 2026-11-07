@@ -359,6 +359,149 @@ resource healthDashboard 'Microsoft.Insights/workbooks@2023-06-01' = {
             showExportToExcel: false
           }
         }
+        {
+          type: 1
+          name: 'blob-reads-description'
+          content: {
+            json: '## Blob reads\nChoose a time range for the total and daily histogram below. Each bar covers a 24-hour bucket starting at the selected range start; the final bucket can be partial. Choose a custom range starting at midnight UTC for calendar-day bins.\n\n**Select a window of at most 31 days.** Azure truncates longer metrics API requests to the latest 31 days of that window. Metrics are retained for 93 days, so custom windows can inspect older retained dates. This picker changes only the blob views, not the latest scheduled-run status.\n\nIncludes browser downloads, Function reads, and diagnostic checks across all blobs; this is not a visitor count. Browser-cached loads may not reach Storage. Uses existing platform metrics, with no access-log ingestion.'
+          }
+        }
+        {
+          type: 9
+          name: 'blob-time-range'
+          content: {
+            version: 'KqlParameterItem/1.0'
+            parameters: [
+              {
+                id: 'blob-time-range'
+                version: 'KqlParameterItem/1.0'
+                name: 'BlobTimeRange'
+                label: 'Blob read time range'
+                type: 4
+                isRequired: true
+                value: {
+                  durationMs: 604800000
+                }
+                typeSettings: {
+                  selectableValues: [
+                    { durationMs: 86400000 }
+                    { durationMs: 259200000 }
+                    { durationMs: 604800000 }
+                    { durationMs: 1209600000 }
+                    { durationMs: 2592000000 }
+                  ]
+                  allowCustom: true
+                }
+              }
+            ]
+            style: 'pills'
+          }
+        }
+        {
+          type: 10
+          name: 'getblob-operations'
+          content: {
+            chartId: 'getblob-operations'
+            version: 'MetricsItem/2.0'
+            size: 4
+            chartType: -1
+            resourceType: 'microsoft.storage/storageaccounts'
+            resourceIds: [
+              dataStorage.id
+            ]
+            timeContext: {
+              durationMs: 0
+            }
+            timeContextFromParameter: 'BlobTimeRange'
+            metrics: [
+              {
+                namespace: 'microsoft.storage/storageaccounts/blobservices'
+                metric: 'microsoft.storage/storageaccounts/blobservices-Transaction-Transactions'
+                aggregation: 1
+                splitBy: null
+                columnName: 'GetBlob operations'
+              }
+            ]
+            filters: [
+              {
+                key: 'ApiName'
+                operator: 0
+                values: [
+                  'GetBlob'
+                ]
+              }
+            ]
+            gridFormatType: 1
+            title: 'GetBlob operations - {BlobTimeRange:label}'
+            tileSettings: {
+              titleContent: {
+                columnMatch: 'Metric'
+                formatter: 1
+              }
+              leftContent: {
+                columnMatch: 'Value'
+                formatter: 1
+                numberFormat: {
+                  unit: 17
+                  options: {
+                    style: 'decimal'
+                    maximumFractionDigits: 0
+                  }
+                }
+              }
+              showBorder: true
+            }
+            showExportToExcel: false
+          }
+        }
+        {
+          type: 3
+          name: 'getblob-daily-histogram'
+          content: {
+            version: 'KqlItem/1.0'
+            queryType: 12
+            resourceType: 'microsoft.storage/storageaccounts'
+            query: string({
+              version: 'ARMEndpoint/1.0'
+              data: null
+              headers: []
+              method: 'GET'
+              path: '${dataBlobService.id}/providers/Microsoft.Insights/metrics'
+              urlParams: [
+                { key: 'api-version', value: '2018-01-01' }
+                { key: 'metricnames', value: 'Transactions' }
+                { key: 'aggregation', value: 'Total' }
+                { key: 'interval', value: 'P1D' }
+                { key: 'timespan', value: '{BlobTimeRange:startISO}/{BlobTimeRange:endISO}' }
+                { key: '$filter', value: 'ApiName eq \'GetBlob\'' }
+              ]
+              batchDisabled: false
+              transformers: [
+                {
+                  type: 'jsonpath'
+                  settings: {
+                    tablePath: '$.value[0].timeseries[0].data'
+                    columns: [
+                      { path: '$.timeStamp', columnid: 'Bucket start (UTC)', columnType: 'datetime' }
+                      { path: '$.total', columnid: 'GetBlob operations', columnType: 'long' }
+                    ]
+                  }
+                }
+              ]
+            })
+            visualization: 'barchart'
+            title: 'GetBlob operations per day - {BlobTimeRange:label}'
+            size: 0
+            chartSettings: {
+              xAxis: 'Bucket start (UTC)'
+              yAxis: [
+                'GetBlob operations'
+              ]
+              showLegend: false
+            }
+            showExportToExcel: true
+          }
+        }
       ]
       isLocked: false
       fallbackResourceIds: [
