@@ -6,20 +6,37 @@
   .report-toolbar {
     grid-template-columns: 1fr;
     gap: 10px;
+    padding-bottom: 0;
+    /* Scroll away the summaries, gap, and top padding; balance the bottom border. */
+    top: calc(-1 * (var(--report-summary-height, 0px) + 22px));
   }
 
   .header-controls {
     align-items: stretch;
+    min-width: 0;
+  }
+
+  .header-menu-panel {
+    /* Extend past the toolbar's 14px padding and 1px border to the card edges. */
+    left: -15px;
+    right: -15px;
   }
 
   .header-menu-buttons {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    flex-wrap: nowrap;
+    gap: 6px;
+    max-width: 100%;
+    padding: 6px 3px;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scrollbar-width: thin;
   }
 
   .header-menu-button {
+    flex: 0 0 auto;
     justify-content: center;
-    padding-inline: 10px;
+    padding: 7px 8px;
+    white-space: nowrap;
   }
 
   .import-panel-content {
@@ -47,10 +64,6 @@
   .menu-icon {
     width: 18px;
     height: 18px;
-  }
-
-  .header-menu-buttons {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .pagination-controls {
@@ -102,17 +115,13 @@
   }
 
   .other-appearances {
-    display: inline;
     margin-left: 6px;
-    white-space: normal;
   }
 
   .user-guess {
-    grid-column: 2 / -1;
+    grid-column: 2;
     grid-row: 2;
-    min-width: 0;
     margin-left: 0;
-    overflow-wrap: anywhere;
   }
 
   .article-day-link {

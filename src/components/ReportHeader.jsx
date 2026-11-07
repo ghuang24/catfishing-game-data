@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from 'react';
 import FiltersPanel from './FiltersPanel.jsx';
 
 function ReportHeader({
@@ -5,9 +6,23 @@ function ReportHeader({
   correctRateSummary,
   filterProps
 }) {
+  const summariesRef = useRef(null);
+  const [summaryHeight, setSummaryHeight] = useState(0);
+
+  useEffect(() => {
+    const observer = new ResizeObserver(([entry]) => {
+      setSummaryHeight(entry.contentRect.height);
+    });
+    observer.observe(summariesRef.current);
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <header className="report-toolbar">
-      <div className="report-summaries">
+    <header
+      className="report-toolbar"
+      style={{ '--report-summary-height': `${summaryHeight}px` }}
+    >
+      <div className="report-summaries" ref={summariesRef}>
         {scoreSummary && (
           <p className="header-score-summary">
             Your daily avg <strong>{scoreSummary.userAverage.toFixed(2)}</strong>

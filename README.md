@@ -40,8 +40,7 @@ setting is missing so they cannot silently deploy stale packaged data.
 
 GitHub Actions tests, builds, and deploys the static application to Pages. The
 timer-triggered Azure Function under
-`game-data-sync/` updates the compressed public data blob independently,
-so data refreshes do not create repository commits or Pages deployments.
+`game-data-sync/` updates the compressed public data blob independently.
 
 Deploy the Azure resources and Function with:
 

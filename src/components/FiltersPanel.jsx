@@ -17,6 +17,12 @@ const MENU_ICONS = {
   filters: filterIcon
 };
 
+const MENU_TITLES = {
+  search: 'Search',
+  date: 'Date',
+  filters: 'Answer filters'
+};
+
 function MenuIcon({ source }) {
   return <img className="menu-icon" src={source} alt="" aria-hidden="true" />;
 }
@@ -45,7 +51,6 @@ function FiltersPanel({
   const [openMenu, setOpenMenu] = useState(null);
   const controlsRef = useRef(null);
   const searchRef = useRef(null);
-  const dayFilterRef = useRef(null);
 
   useEffect(() => {
     function closeOnOutsideClick(event) {
@@ -71,8 +76,6 @@ function FiltersPanel({
   useEffect(() => {
     if (openMenu === 'search') {
       searchRef.current?.focus();
-    } else if (openMenu === 'date') {
-      dayFilterRef.current?.focus();
     }
   }, [openMenu]);
 
@@ -156,9 +159,28 @@ function FiltersPanel({
 
       {openMenu && (
         <div className="header-menu-panel" id={`${openMenu}-menu`}>
+          <div className="header-menu-panel-heading">
+            {openMenu === 'search' ? (
+              <label className="menu-title" htmlFor="search-filter">Search</label>
+            ) : (
+              <span className="menu-title">{MENU_TITLES[openMenu]}</span>
+            )}
+            <button
+              type="button"
+              className="menu-close-button"
+              aria-label={`Close ${MENU_TITLES[openMenu]} window`}
+              onClick={() => {
+                controlsRef.current
+                  ?.querySelector(`[aria-controls="${openMenu}-menu"]`)
+                  ?.focus();
+                setOpenMenu(null);
+              }}
+            >
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
           {openMenu === 'search' && (
             <>
-              <label className="menu-title" htmlFor="search-filter">Search</label>
               <input
                 ref={searchRef}
                 id="search-filter"
@@ -177,7 +199,6 @@ function FiltersPanel({
 
           {openMenu === 'date' && (
             <>
-              <span className="menu-title">Date</span>
               <div className="date-shortcuts" aria-label="Date shortcuts">
                 {[30, 60, 90].map(days => (
                   <button
@@ -195,7 +216,6 @@ function FiltersPanel({
               </div>
               <label className="input-label" htmlFor="day-filter">Specific days</label>
               <input
-                ref={dayFilterRef}
                 id="day-filter"
                 type="text"
                 value={dayFilter}
@@ -218,7 +238,6 @@ function FiltersPanel({
 
           {openMenu === 'filters' && (
             <>
-              <span className="menu-title">Answer filters</span>
               <div className="answer-checkboxes">
                 {ANSWER_OPTIONS.map(option => (
                   <label className="menu-checkbox" key={option.value}>

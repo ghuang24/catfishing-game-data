@@ -66,7 +66,7 @@ function ArticleSection({
           )}
         </span>
         {answerData?.guess && !article.hidden && (
-          <span className="user-guess">{answerData.guess}</span>
+          <span className="user-guess" title={answerData.guess}>{answerData.guess}</span>
         )}
         {showDay && (
           <a 

@@ -181,6 +181,7 @@
 }
 
 .other-appearances {
+  display: inline-block;
   margin-left: 10px;
   color: var(--accent-soft);
   font-size: 0.75rem;
@@ -208,6 +209,10 @@
 }
 
 .user-guess {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   font-size: 0.9rem;
   color: var(--answer);
   font-style: italic;
@@ -222,6 +227,7 @@
 }
 
 .article-day-link {
+  flex-shrink: 0;
   text-decoration: none;
   transition: background-color 0.2s, opacity 0.2s;
   display: inline-flex;
@@ -237,6 +243,7 @@
 }
 
 .wikipedia-link {
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   text-decoration: none;
@@ -256,6 +263,8 @@
 }
 
 .correct-rate {
+  flex-shrink: 0;
+  white-space: nowrap;
   font-family: "Courier New", Courier, monospace;
   color: var(--correct-rate);
   font-weight: bold;

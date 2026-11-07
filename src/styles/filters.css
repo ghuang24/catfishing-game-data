@@ -56,6 +56,7 @@
 }
 
 .header-menu-button:focus-visible,
+.menu-close-button:focus-visible,
 .date-shortcut:focus-visible,
 .rate-shortcut:focus-visible,
 .menu-search-input:focus-visible {
@@ -106,6 +107,35 @@
   border-radius: 14px;
   background: var(--panel);
   box-shadow: 0 12px 30px rgb(0 0 0 / 35%);
+}
+
+.header-menu-panel-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.menu-close-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 44px;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 10px;
+  color: var(--muted);
+  background: transparent;
+  font: inherit;
+  font-family: var(--control-font);
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.menu-close-button:hover {
+  color: var(--ink);
 }
 
 .menu-title {
