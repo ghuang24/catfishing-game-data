@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {
   type GameRecord,
+  latestPublishedGameDay,
   parseGameRecords,
   selectDaysToRefresh,
   updateGameData
@@ -60,20 +61,20 @@ test("rejects duplicate days", () => {
 });
 
 test("selects the latest day and overdue records by age tier", () => {
-  const currentTime = new Date("2026-10-10T00:00:00.000Z");
+  const currentTime = new Date("2024-10-01T10:15:00.000Z");
   const records = [
-    makeRecord(1, "2026-09-09T00:00:00.000Z"),
-    makeRecord(2, "2026-09-11T00:00:00.000Z"),
-    makeRecord(20, "2026-10-02T00:00:00.000Z"),
-    makeRecord(21, "2026-10-04T00:00:00.000Z"),
-    makeRecord(98, "2026-10-08T23:00:00.000Z"),
-    makeRecord(99, "2026-10-09T12:00:00.000Z"),
-    makeRecord(100, "2026-10-09T22:00:00.000Z")
+    makeRecord(1, "2024-08-31T00:00:00.000Z"),
+    makeRecord(2, "2024-09-02T00:00:00.000Z"),
+    makeRecord(20, "2024-09-23T00:00:00.000Z"),
+    makeRecord(21, "2024-09-25T00:00:00.000Z"),
+    makeRecord(98, "2024-09-30T09:15:00.000Z"),
+    makeRecord(99, "2024-10-01T00:15:00.000Z"),
+    makeRecord(100, "2024-10-01T08:15:00.000Z")
   ];
 
   assert.deepEqual(
-    selectDaysToRefresh(records, true, currentTime, 5),
-    [100, 101, 98, 20, 1]
+    selectDaysToRefresh(records, false, currentTime, 4),
+    [100, 98, 20, 1]
   );
 });
 
@@ -88,7 +89,7 @@ test("refreshes the latest day and appends the next day", async () => {
       requestedUserAgents.push(new Headers(init?.headers).get("user-agent"));
       return successfulResponse();
     },
-    now: () => new Date("2026-10-04T10:15:00.000Z"),
+    now: () => new Date("2024-07-05T10:15:00.000Z"),
     maxRequests: 2,
     ...immediateOptions
   });
@@ -108,6 +109,72 @@ test("refreshes the latest day and appends the next day", async () => {
     [12, 13]
   );
 });
+
+  test("publication boundary stays at 10 UTC across Pacific DST changes", () => {
+    for (const [date, day] of [
+      ["2026-03-08", 623],
+      ["2026-11-01", 861],
+      ["2026-11-07", 867]
+    ] as const) {
+      assert.equal(latestPublishedGameDay(new Date(`${date}T09:59:59.999Z`)), day);
+      assert.equal(latestPublishedGameDay(new Date(`${date}T10:00:00.000Z`)), day + 1);
+    }
+  });
+
+  test("catches up multiple missed days and does not append again on rerun", async () => {
+    const options = {
+      appendNext: true,
+      fetchImpl: successfulResponse,
+      now: () => new Date("2026-11-07T10:15:00.000Z"),
+      maxRequests: 4,
+      ...immediateOptions
+    };
+    const result = await updateGameData({
+      ...options,
+      content: serialize([makeRecord(865, "2026-11-05T10:15:00.000Z")])
+    });
+    assert.deepEqual(result.appendedDays, [866, 867, 868]);
+    assert.equal(result.appendedDay, 868);
+    assert.equal(result.targetDay, 868);
+    assert.equal(result.targetDayPresent, true);
+    const rerun = await updateGameData({ ...options, content: result.content });
+    assert.deepEqual(rerun.appendedDays, []);
+    assert.equal(rerun.appendedDay, null);
+  });
+
+  test("bounds catch-up requests and retries gaps left by a failed append", async () => {
+    const result = await updateGameData({
+      content: serialize([makeRecord(865, "2026-11-07T10:15:00.000Z")]),
+      appendNext: true,
+      now: () => new Date("2026-11-07T22:15:00.000Z"),
+      maxRequests: 3,
+      fetchImpl: async (url) => {
+        if (url.endsWith("day=866")) throw new Error("Network failure");
+        return successfulResponse();
+      },
+      ...immediateOptions
+    });
+    assert.deepEqual(result.attemptedDays, [865, 866, 867]);
+    assert.deepEqual(result.appendedDays, [867]);
+    assert.equal(result.targetDayPresent, false);
+    assert.deepEqual(
+      selectDaysToRefresh(
+        parseGameRecords(result.content), true,
+        new Date("2026-11-07T22:15:00.000Z"), 3
+      ),
+      [867, 866, 868]
+    );
+  });
+
+  test("does not fetch an unpublished day before the UTC+14 boundary", () => {
+    assert.deepEqual(
+      selectDaysToRefresh(
+        [makeRecord(867, "2026-11-07T09:00:00.000Z")], true,
+        new Date("2026-11-07T09:59:59.999Z"), 25
+      ),
+      [867]
+    );
+  });
 
 test("refreshes only the latest day when no archive records are due", async () => {
   const requestedUrls: string[] = [];

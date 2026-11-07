@@ -105,13 +105,21 @@ export const synchronizeBlob = async (
     }
   });
 
-  context.log("Game data sync completed.", {
+  context.log("Game data sync completed.", JSON.stringify({
+    status: !update.targetDayPresent
+      ? "Behind"
+      : update.failedDays.length > 0 || update.stoppedReason
+        ? "Degraded"
+        : "Healthy",
     appendedDay: update.appendedDay,
+    appendedDays: update.appendedDays,
+    targetDay: update.targetDay,
+    targetDayPresent: update.targetDayPresent,
     attemptedDayCount: update.attemptedDays.length,
     failedDayCount: update.failedDays.length,
     refreshedDayCount: update.refreshedDays.length,
     requestCount: update.requestCount,
     retryCount: update.retryCount,
     stoppedReason: update.stoppedReason
-  });
+  }));
 };

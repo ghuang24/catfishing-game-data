@@ -1,0 +1,36 @@
+let schedules = datatable(name:string, scheduledHour:int)
+[
+  "finalizeAndAppendGameData", 10,
+  "refreshLatestGameData", 22
+];
+let latestRuns = requests
+| where timestamp > ago(7d)
+| where name in ("finalizeAndAppendGameData", "refreshLatestGameData")
+| summarize arg_max(timestamp, *) by name
+| project name, timestamp, success, operation_Id;
+let results = traces
+| where timestamp > ago(7d)
+| summarize
+    warnings = countif(severityLevel >= 2),
+    summary = take_anyif(message, message startswith "Game data sync completed.")
+  by operation_Id
+| extend details = parse_json(extract(@"Game data sync completed\. (\{.*\})", 1, summary));
+schedules
+| join kind=leftouter latestRuns on name
+| join kind=leftouter results on operation_Id
+| extend scheduledToday = startofday(now()) + scheduledHour * 1h + 15m
+| extend expectedRun = iff(now() >= scheduledToday + 15m, scheduledToday, scheduledToday - 1d)
+| extend Status = case(
+    isnull(timestamp), "No telemetry",
+    timestamp < expectedRun, "Overdue",
+    success == false, "Failed",
+    tostring(details.status) == "Behind", "Behind",
+    tostring(details.status) == "Degraded" or warnings > 0, "Degraded",
+    "Healthy")
+| extend Cell = strcat(
+    Status, " | Last run: ",
+    iff(isnull(timestamp), "none", strcat(format_datetime(datetime_utc_to_local(timestamp, "US/Pacific"), "yyyy-MM-dd HH:mm:ss"), " Pacific")),
+    iff(isnotnull(details.targetDay), strcat(" | Target day: ", tostring(details.targetDay)), ""))
+| summarize
+    FinalizeAndAppend_1015UTC = take_anyif(Cell, name == "finalizeAndAppendGameData"),
+    RefreshLatest_2215UTC = take_anyif(Cell, name == "refreshLatestGameData")

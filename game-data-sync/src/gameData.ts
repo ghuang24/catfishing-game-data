@@ -52,6 +52,9 @@ export type GameDataUpdate = {
   content: string;
   refreshedDays: number[];
   appendedDay: number | null;
+  appendedDays: number[];
+  targetDay: number;
+  targetDayPresent: boolean;
   attemptedDays: number[];
   failedDays: RefreshFailure[];
   requestCount: number;
@@ -60,6 +63,15 @@ export type GameDataUpdate = {
 };
 
 const DAY_MS = 24 * 60 * 60 * 1000;
+const GAME_ANCHOR_MS = Date.UTC(2024, 6, 25);
+const GAME_ANCHOR_DAY = 32;
+const FIRST_TIMEZONE_OFFSET_MS = 14 * 60 * 60 * 1000;
+
+export const latestPublishedGameDay = (currentTime: Date): number =>
+  GAME_ANCHOR_DAY +
+  Math.floor(
+    (currentTime.getTime() + FIRST_TIMEZONE_OFFSET_MS - GAME_ANCHOR_MS) / DAY_MS
+  );
 const API_URL = "https://catfishing.net/app/game";
 const API_USER_AGENT =
   "catfishing-game-data-sync (+https://github.com/ghuang24/catfishing-game-data)";
@@ -176,9 +188,18 @@ export const selectDaysToRefresh = (
   maxRequests: number
 ): number[] => {
   const latestDay = Math.max(...records.map((record) => record.day));
-  const mandatoryDays = appendNext
-    ? [latestDay, latestDay + 1]
-    : [latestDay];
+  const mandatoryDays = [latestDay];
+  if (appendNext) {
+    const existingDays = new Set(records.map((record) => record.day));
+    const targetDay = latestPublishedGameDay(currentTime);
+    for (
+      let day = Math.min(...existingDays);
+      day <= targetDay && mandatoryDays.length < maxRequests;
+      day += 1
+    ) {
+      if (!existingDays.has(day)) mandatoryDays.push(day);
+    }
+  }
   const availableSlots = Math.max(0, maxRequests - mandatoryDays.length);
   const nowMs = currentTime.getTime();
 
@@ -401,7 +422,6 @@ export const updateGameData = async ({
   executionBudgetMs?: number;
 }): Promise<GameDataUpdate> => {
   const records = parseGameRecords(content);
-  const latestDay = Math.max(...records.map((record) => record.day));
   const currentTime = now();
   const daysToFetch = selectDaysToRefresh(
     records,
@@ -462,13 +482,20 @@ export const updateGameData = async ({
     }
   }
   records.sort((left, right) => left.day - right.day);
+  const appendedDays = [...fetchedRecords.keys()].filter(
+    (day) => !existingDays.has(day)
+  );
+  const targetDay = latestPublishedGameDay(currentTime);
 
   return {
     content: fetchedRecords.size === 0
       ? content
       : `${records.map((record) => JSON.stringify(record)).join("\n")}\n`,
     refreshedDays: [...fetchedRecords.keys()].filter((day) => existingDays.has(day)),
-    appendedDay: fetchedRecords.has(latestDay + 1) ? latestDay + 1 : null,
+    appendedDay: appendedDays.length > 0 ? Math.max(...appendedDays) : null,
+    appendedDays,
+    targetDay,
+    targetDayPresent: records.some((record) => record.day === targetDay),
     attemptedDays,
     failedDays,
     requestCount,

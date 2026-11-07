@@ -322,6 +322,53 @@ resource functionApp 'Microsoft.Web/sites@2024-11-01' = {
   ]
 }
 
+resource healthDashboard 'Microsoft.Insights/workbooks@2023-06-01' = {
+  name: guid(resourceGroup().id, 'game-data-sync-health')
+  location: location
+  kind: 'shared'
+  properties: {
+    displayName: 'Catfishing scheduled update health'
+    category: 'workbook'
+    sourceId: appInsights.id
+    version: '1.0'
+    serializedData: string({
+      version: 'Notebook/1.0'
+      items: [
+        {
+          type: 1
+          name: 'description'
+          content: {
+            json: '# Scheduled update health\nLatest status for each timer. Times are Pacific (DST-aware). Runs are marked overdue 15 minutes after their expected UTC schedule. Refresh the workbook to update the status.'
+          }
+        }
+        {
+          type: 3
+          name: 'latest-status'
+          content: {
+            version: 'KqlItem/1.0'
+            query: loadTextContent('health.kql')
+            queryType: 0
+            resourceType: 'microsoft.insights/components'
+            crossComponentResources: [
+              appInsights.id
+            ]
+            visualization: 'table'
+            timeContext: {
+              durationMs: 604800000
+            }
+            showExportToExcel: false
+          }
+        }
+      ]
+      isLocked: false
+      fallbackResourceIds: [
+        appInsights.id
+      ]
+    })
+  }
+}
+
+output healthDashboardId string = healthDashboard.id
 output functionAppName string = functionApp.name
 output dataStorageAccountName string = dataStorage.name
 output dataContainerName string = dataContainer.name

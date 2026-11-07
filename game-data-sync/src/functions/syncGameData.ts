@@ -18,7 +18,7 @@ const refreshLatest = async (
   if (timer.isPastDue) {
     context.warn("Latest-day refresh timer is running late.");
   }
-  await synchronizeBlob(false, context);
+  await synchronizeBlob(true, context);
 };
 
 app.timer("finalizeAndAppendGameData", {
