@@ -89,6 +89,55 @@ function flattenAndSortArticles(days, articleSortBy) {
   );
 }
 
+function keepExtremeQuestionDays(
+  days,
+  scoresByDay,
+  gotHardestQuestion,
+  missedEasiestQuestion
+) {
+  if (!gotHardestQuestion && !missedEasiestQuestion) return days;
+
+  return days.filter(dayData => {
+    const scoreData = scoresByDay.get(dayData.day);
+    if (!scoreData) return false;
+
+    const answeredArticles = dayData.data.flatMap((article, index) => {
+      const originalIndex = article.originalIndex ?? index;
+      const answer = scoreData.answers?.[originalIndex];
+      return Number.isFinite(article.correctRate) &&
+        answer &&
+        answer.correctness !== AnswerCorrectness.HIDDEN
+        ? [{ article, answer }]
+        : [];
+    });
+    if (answeredArticles.length === 0) return false;
+
+    if (gotHardestQuestion) {
+      const hardestRate = Math.min(
+        ...answeredArticles.map(({ article }) => article.correctRate)
+      );
+      const gotHardest = answeredArticles.some(({ article, answer }) =>
+        article.correctRate === hardestRate &&
+        answer.correctness === AnswerCorrectness.CORRECT
+      );
+      if (!gotHardest) return false;
+    }
+
+    if (missedEasiestQuestion) {
+      const easiestRate = Math.max(
+        ...answeredArticles.map(({ article }) => article.correctRate)
+      );
+      const missedEasiest = answeredArticles.some(({ article, answer }) =>
+        article.correctRate === easiestRate &&
+        answer.correctness === AnswerCorrectness.INCORRECT
+      );
+      if (!missedEasiest) return false;
+    }
+
+    return true;
+  });
+}
+
 export function filterReportData({
   data,
   scoresData,
@@ -99,11 +148,16 @@ export function filterReportData({
   showHidden,
   answerFilters,
   correctRateFilter,
+  gotHardestQuestion,
+  missedEasiestQuestion,
   articleSortBy,
   daySortBy
 }) {
   const scoresByDay = new Map(scoresData.map(score => [score?.day, score]));
-  const allowedDays = parseDayFilter(dayFilter);
+  const allowedDays = parseDayFilter(
+    dayFilter,
+    data.map(dayData => dayData.day)
+  );
   let filtered = allowedDays
     ? data.filter(dayData => allowedDays.has(dayData.day))
     : data;
@@ -119,6 +173,13 @@ export function filterReportData({
       dayData.day >= firstDay && dayData.day <= latestDay
     );
   }
+
+  filtered = keepExtremeQuestionDays(
+    filtered,
+    scoresByDay,
+    gotHardestQuestion,
+    missedEasiestQuestion
+  );
 
   if (searchQuery) {
     filtered = keepMatchingArticles(filtered, article =>
@@ -185,10 +246,18 @@ export function summarizeReportData({
       ? [{ userScore, globalScore }]
       : [];
   });
+  const totalComparableDays = data.flatMap(dayData => {
+    const userScore = scoresByDay.get(dayData.day)?.score;
+    const globalScore = dayData.stats?.scoresMean;
+    return Number.isFinite(userScore) && Number.isFinite(globalScore)
+      ? [{ userScore, globalScore }]
+      : [];
+  });
 
   const scoreSummary = comparableDays.length > 0
     ? {
         dayCount: comparableDays.length,
+        totalDayCount: totalComparableDays.length,
         userAverage:
           comparableDays.reduce((sum, day) => sum + day.userScore, 0) /
           comparableDays.length,

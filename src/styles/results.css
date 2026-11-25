@@ -68,14 +68,14 @@
   font-size: 1.25rem;
   font-weight: bold;
   margin: 0 0 10px;
-  padding-bottom: 6px;
+  padding: 0 12px 6px 0;
   border-bottom: 1px solid var(--accent);
   color: var(--accent);
   font-family: var(--control-font);
   letter-spacing: 0.1em;
   text-transform: uppercase;
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 12px;
 }
 
@@ -97,6 +97,48 @@
 .day-header a:hover {
   color: var(--highlight);
   text-decoration-thickness: 2px;
+}
+
+.day-goto-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  color: var(--accent);
+  background: transparent;
+  cursor: pointer;
+  transition: border-color 0.2s, background-color 0.2s, box-shadow 0.2s;
+}
+
+.day-goto-button svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.day-goto-button circle,
+.day-goto-button path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.day-goto-button:hover {
+  color: var(--accent);
+  background: var(--panel-hover);
+  border-color: var(--accent);
+}
+
+.day-header > .day-goto-button,
+.article-header > .day-goto-button {
+  margin-left: auto;
 }
 
 .day-score {
@@ -146,7 +188,7 @@
   font-size: 1.4rem;
   font-weight: normal;
   margin: 0;
-  padding: 16px 20px;
+  padding: 16px 32px 16px 20px;
   cursor: pointer;
   user-select: none;
   display: flex;
@@ -240,6 +282,18 @@
 .article-day-link:hover {
   background-color: rgb(52 211 153 / 12%);
   opacity: 1;
+}
+
+.article-day-controls {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  gap: 4px;
+}
+
+.article-day-controls .day-goto-button {
+  width: 32px;
+  height: 32px;
 }
 
 .wikipedia-link {

@@ -6,7 +6,9 @@ function SortedArticles({
   appearanceDaysByTitle,
   highlightQuery,
   renderHighlight,
-  onSelectDay
+  onSelectDay,
+  onGoToDay,
+  showGoToDay
 }) {
   return (
     <div className="sorted-articles">
@@ -24,6 +26,8 @@ function SortedArticles({
             renderHighlight={renderHighlight}
             onSelectDay={onSelectDay}
             showDay={true}
+            onGoToDay={onGoToDay}
+            showGoToDay={showGoToDay}
           />
         );
       })}

@@ -8,6 +8,12 @@ function ReportHeader({
 }) {
   const summariesRef = useRef(null);
   const [summaryHeight, setSummaryHeight] = useState(0);
+  const dateFilterApplied = Boolean(
+    filterProps.dayFilter?.trim() ||
+    filterProps.dateRange ||
+    filterProps.gotHardestQuestion ||
+    filterProps.missedEasiestQuestion
+  );
 
   useEffect(() => {
     const observer = new ResizeObserver(([entry]) => {
@@ -25,30 +31,50 @@ function ReportHeader({
       <div className="report-summaries" ref={summariesRef}>
         {scoreSummary && (
           <p className="header-score-summary">
-            Your daily avg <strong>{scoreSummary.userAverage.toFixed(2)}</strong>
-            <span aria-hidden="true"> · </span>
-            Global daily avg <strong>{scoreSummary.globalAverage.toFixed(2)}</strong>
-            <span aria-hidden="true"> · </span>
-            Across {scoreSummary.dayCount} {scoreSummary.dayCount === 1 ? 'day' : 'days'}
+            <span className="summary-line">
+              <span className="summary-segment">
+                Your daily avg <strong>{scoreSummary.userAverage.toFixed(2)}</strong>
+              </span>
+              <span aria-hidden="true" className="summary-divider"> · </span>
+              <span className="summary-segment">
+                Global daily avg <strong>{scoreSummary.globalAverage.toFixed(2)}</strong>
+              </span>
+            </span>
+            <span className="summary-line summary-secondary-line">
+              {dateFilterApplied
+                ? `Across ${scoreSummary.dayCount}/${scoreSummary.totalDayCount} days played`
+                : `Across ${scoreSummary.dayCount} ${scoreSummary.dayCount === 1 ? 'day' : 'days'}`}
+            </span>
           </p>
         )}
         {correctRateSummary && (
           <p className="header-correct-summary">
-            Your correct rate <strong>{correctRateSummary.userRate.toFixed(1)}%</strong>
-            <span aria-hidden="true"> · </span>
-            Global correct rate <strong>{correctRateSummary.globalRate.toFixed(1)}%</strong>
-            <span aria-hidden="true"> · </span>
-            {correctRateSummary.questionCount}{' '}
-            {correctRateSummary.questionCount === 1 ? 'question' : 'questions'}
-            <span aria-hidden="true"> · </span>
-            <strong
-              className={
-                correctRateSummary.difference >= 0 ? 'rate-positive' : 'rate-negative'
-              }
-            >
-              {correctRateSummary.difference > 0 ? '+' : ''}
-              {correctRateSummary.difference.toFixed(1)} pts
-            </strong>
+            <span className="summary-line">
+              <span className="summary-segment">
+                Your correct rate <strong>{correctRateSummary.userRate.toFixed(1)}%</strong>
+              </span>
+              <span aria-hidden="true" className="summary-divider"> · </span>
+              <span className="summary-segment">
+                Global correct rate <strong>{correctRateSummary.globalRate.toFixed(1)}%</strong>
+              </span>
+            </span>
+            <span className="summary-line summary-secondary-line">
+              <span className="summary-segment">
+                {correctRateSummary.questionCount}{' '}
+                {correctRateSummary.questionCount === 1 ? 'question' : 'questions'}
+              </span>
+              <span aria-hidden="true" className="summary-divider"> · </span>
+              <span className="summary-segment">
+                <strong
+                  className={
+                    correctRateSummary.difference >= 0 ? 'rate-positive' : 'rate-negative'
+                  }
+                >
+                  {correctRateSummary.difference > 0 ? '+' : ''}
+                  {correctRateSummary.difference.toFixed(1)} pts
+                </strong>
+              </span>
+            </span>
           </p>
         )}
       </div>

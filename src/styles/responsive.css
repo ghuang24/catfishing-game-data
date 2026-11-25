@@ -17,9 +17,9 @@
   }
 
   .header-menu-panel {
-    /* Extend past the toolbar's 14px padding and 1px border to the card edges. */
-    left: -15px;
-    right: -15px;
+    /* Extend past the toolbar's 24px padding and 1px border to the card edges. */
+    left: -25px;
+    right: -25px;
   }
 
   .header-menu-buttons {

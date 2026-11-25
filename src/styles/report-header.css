@@ -39,7 +39,7 @@
   align-items: center;
   gap: 20px;
   margin-bottom: 28px;
-  padding: 12px 14px;
+  padding: 6px 24px;
   border: 1px solid var(--border);
   background: var(--bg);
   box-shadow: 0 8px 20px rgb(0 0 0 / 24%);
@@ -51,6 +51,23 @@
   color: var(--muted);
   font-family: var(--control-font);
   font-size: 0.95rem;
+}
+
+.report-toolbar .summary-line {
+  display: block;
+  white-space: nowrap;
+}
+
+.report-toolbar .summary-secondary-line {
+  color: var(--ink);
+}
+
+.report-toolbar .summary-segment {
+  white-space: nowrap;
+}
+
+.report-toolbar .summary-divider {
+  color: var(--muted);
 }
 
 .report-toolbar .header-correct-summary {
@@ -68,6 +85,14 @@
 }
 
 .header-correct-summary .rate-negative {
+  color: var(--danger);
+}
+
+.summary-secondary-line .rate-positive {
+  color: var(--accent);
+}
+
+.summary-secondary-line .rate-negative {
   color: var(--danger);
 }
 

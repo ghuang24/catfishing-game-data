@@ -27,31 +27,68 @@ export function parseCorrectRateRange(filterText: string): NumberRange | null {
 
 /**
  * Parses day filter string into a Set of day numbers
- * Supports ranges (32-35) and comma-separated values (32, 34, 37)
+ * Supports ranges (32-35), open-ended ranges (-50, 750-),
+ * and comma-separated values (32, 34, 37)
  * @param filterText - The filter input text
+ * @param availableDays - Optional day numbers to constrain open-ended ranges
  * @returns Set of day numbers or null if empty
  */
-export function parseDayFilter(filterText: string): Set<number> | null {
+export function parseDayFilter(
+  filterText: string,
+  availableDays: number[] = []
+): Set<number> | null {
   if (!filterText.trim()) return null;
   
   const days = new Set<number>();
   const parts = filterText.split(',').map(p => p.trim());
   
   for (const part of parts) {
-    if (part.includes('-')) {
-      // Handle range like "32-35"
-      const [start, end] = part.split('-').map(n => parseInt(n.trim()));
-      if (!isNaN(start) && !isNaN(end)) {
-        for (let i = Math.min(start, end); i <= Math.max(start, end); i++) {
-          days.add(i);
+    const rangeMatch = part.match(/^(\d*)\s*-\s*(\d*)$/);
+    if (rangeMatch) {
+      const startText = rangeMatch[1];
+      const endText = rangeMatch[2];
+      if (!startText && !endText) continue;
+
+      const start = startText ? parseInt(startText) : null;
+      const end = endText ? parseInt(endText) : null;
+
+      if (availableDays.length > 0) {
+        const lowerBound = start === null
+          ? 1
+          : end === null
+            ? start
+            : Math.min(start, end);
+        const upperBound = end === null
+          ? Number.MAX_SAFE_INTEGER
+          : start === null
+            ? end
+            : Math.max(start, end);
+
+        for (const day of availableDays) {
+          if (day >= lowerBound && day <= upperBound) {
+            days.add(day);
+          }
         }
+        continue;
       }
-    } else {
-      // Handle single number
-      const day = parseInt(part);
-      if (!isNaN(day)) {
-        days.add(day);
+
+      if (start !== null && end !== null) {
+        for (let day = Math.min(start, end); day <= Math.max(start, end); day++) {
+          days.add(day);
+        }
+      } else if (start === null) {
+        for (let day = 1; day <= end; day++) {
+          days.add(day);
+        }
+      } else if (end === null) {
+        days.add(start);
       }
+      continue;
+    }
+
+    const day = parseInt(part);
+    if (!isNaN(day)) {
+      days.add(day);
     }
   }
   

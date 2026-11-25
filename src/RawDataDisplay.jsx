@@ -25,6 +25,8 @@ function RawDataDisplay({ data, scoresData }) {
   const [showHidden, setShowHidden] = useState(false);
   const [answerFilters, setAnswerFilters] = useState([]);
   const [correctRateFilter, setCorrectRateFilter] = useState('');
+  const [gotHardestQuestion, setGotHardestQuestion] = useState(false);
+  const [missedEasiestQuestion, setMissedEasiestQuestion] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageInput, setPageInput] = useState('1');
   const [showPageRails, setShowPageRails] = useState(false);
@@ -48,7 +50,9 @@ function RawDataDisplay({ data, scoresData }) {
     daySortBy,
     showHidden,
     answerFilters,
-    correctRateFilter
+    correctRateFilter,
+    gotHardestQuestion,
+    missedEasiestQuestion
   ]);
 
   useEffect(() => {
@@ -74,6 +78,8 @@ function RawDataDisplay({ data, scoresData }) {
     showHidden,
     answerFilters,
     correctRateFilter,
+    gotHardestQuestion,
+    missedEasiestQuestion,
     articleSortBy,
     daySortBy
   });
@@ -150,12 +156,36 @@ function RawDataDisplay({ data, scoresData }) {
     setShowHidden(false);
     setAnswerFilters([]);
     setCorrectRateFilter('');
+    setGotHardestQuestion(false);
+    setMissedEasiestQuestion(false);
   }
 
   function selectDay(day) {
     setDayFilter(String(day));
     setDateRange(null);
   }
+
+  function goToDayWithFiltersReset(day) {
+    setSearchInput('');
+    setSearchQuery('');
+    setDayFilter(String(day));
+    setDateRange(null);
+    setShowUnplayed(false);
+    setShowHidden(false);
+    setAnswerFilters([]);
+    setCorrectRateFilter('');
+    setGotHardestQuestion(false);
+    setMissedEasiestQuestion(false);
+    setCurrentPage(1);
+  }
+
+  const hasNonDateFilters = Boolean(
+    searchInput.trim() ||
+    searchQuery ||
+    showHidden ||
+    answerFilters.length ||
+    correctRateFilter.trim()
+  );
 
   function cycleArticleSort() {
     setArticleSortBy(current => {
@@ -203,6 +233,10 @@ function RawDataDisplay({ data, scoresData }) {
     setAnswerFilters,
     correctRateFilter,
     setCorrectRateFilter,
+    gotHardestQuestion,
+    setGotHardestQuestion,
+    missedEasiestQuestion,
+    setMissedEasiestQuestion,
     onClearAll: clearAllFilters,
     filteredDays,
     totalDays: data.length,
@@ -238,6 +272,8 @@ function RawDataDisplay({ data, scoresData }) {
             highlightQuery={searchQuery}
             renderHighlight={renderHighlight}
             onSelectDay={selectDay}
+            onGoToDay={goToDayWithFiltersReset}
+            showGoToDay={hasNonDateFilters}
           />
         ) : (
           paginatedData.map(dayData => (
@@ -249,6 +285,8 @@ function RawDataDisplay({ data, scoresData }) {
               highlightQuery={searchQuery}
               renderHighlight={renderHighlight}
               onSelectDay={selectDay}
+              onGoToDay={goToDayWithFiltersReset}
+              showGoToDay={hasNonDateFilters}
             />
           ))
         )}

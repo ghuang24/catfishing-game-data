@@ -14,7 +14,9 @@ function ArticleSection({
   highlightQuery,
   renderHighlight,
   onSelectDay,
-  showDay
+  showDay,
+  onGoToDay,
+  showGoToDay
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const otherDays = appearanceDays?.filter(day => day !== currentDay) ?? [];
@@ -69,15 +71,17 @@ function ArticleSection({
           <span className="user-guess" title={answerData.guess}>{answerData.guess}</span>
         )}
         {showDay && (
-          <a 
-            href={`https://catfishing.net/game/${article.day}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="article-day-link"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <span className="article-day">Day {article.day}</span>
-          </a>
+          <span className="article-day-controls">
+            <a
+              href={`https://catfishing.net/game/${article.day}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="article-day-link"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <span className="article-day">Day {article.day}</span>
+            </a>
+          </span>
         )}
         <a 
           href={wikipediaUrl}
@@ -90,6 +94,23 @@ function ArticleSection({
           <img src={globeIcon} alt="" />
         </a>
         <span className="correct-rate">{article.correctRate.toFixed(2)}%</span>
+        {showGoToDay && (
+          <button
+            type="button"
+            className="day-goto-button"
+            onClick={(event) => {
+              event.stopPropagation();
+              onGoToDay(article.day);
+            }}
+            aria-label={`Clear filters and view day ${article.day}`}
+            title="Clear filters and view this day"
+          >
+            <svg viewBox="0 0 28 28" aria-hidden="true">
+              <circle cx="14" cy="14" r="12.5" />
+              <path d="M7 14h13M15 9l5 5-5 5" />
+            </svg>
+          </button>
+        )}
       </h2>
       {isOpen && (
         <div className="categories-content">
