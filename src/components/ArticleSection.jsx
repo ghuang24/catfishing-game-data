@@ -14,9 +14,7 @@ function ArticleSection({
   highlightQuery,
   renderHighlight,
   onSelectDay,
-  showDay,
-  onGoToDay,
-  showGoToDay
+  showDay
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const otherDays = appearanceDays?.filter(day => day !== currentDay) ?? [];
@@ -83,34 +81,19 @@ function ArticleSection({
             </a>
           </span>
         )}
-        <a 
-          href={wikipediaUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="wikipedia-link"
-          onClick={(e) => e.stopPropagation()}
-          title="View on Wikipedia"
-        >
-          <img src={globeIcon} alt="" />
-        </a>
-        <span className="correct-rate">{article.correctRate.toFixed(2)}%</span>
-        {showGoToDay && (
-          <button
-            type="button"
-            className="day-goto-button"
-            onClick={(event) => {
-              event.stopPropagation();
-              onGoToDay(article.day);
-            }}
-            aria-label={`Clear filters and view day ${article.day}`}
-            title="Clear filters and view this day"
+        <span className="article-right-controls">
+          <a
+            href={wikipediaUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="wikipedia-link"
+            onClick={(e) => e.stopPropagation()}
+            title="View on Wikipedia"
           >
-            <svg viewBox="0 0 28 28" aria-hidden="true">
-              <circle cx="14" cy="14" r="12.5" />
-              <path d="M7 14h13M15 9l5 5-5 5" />
-            </svg>
-          </button>
-        )}
+            <img src={globeIcon} alt="" />
+          </a>
+          <span className="correct-rate">{article.correctRate.toFixed(2)}%</span>
+        </span>
       </h2>
       {isOpen && (
         <div className="categories-content">

@@ -1,10 +1,16 @@
+@media (max-width: 840px) {
+  .report-toolbar .summary-line {
+    white-space: normal;
+  }
+}
+
 @media (max-width: 720px) {
   .page {
     padding-top: 28px;
   }
 
   .report-toolbar {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     gap: 10px;
     padding-bottom: 0;
     /* Scroll away the summaries, gap, and top padding; balance the bottom border. */
@@ -20,6 +26,18 @@
     /* Extend past the toolbar's 24px padding and 1px border to the card edges. */
     left: -25px;
     right: -25px;
+  }
+
+  .header-menu-panel-heading {
+    min-width: 0;
+  }
+
+  .menu-title {
+    min-width: 0;
+  }
+
+  .menu-heading-actions {
+    margin-right: 8px;
   }
 
   .header-menu-buttons {
@@ -39,6 +57,31 @@
     white-space: nowrap;
   }
 
+  .day-header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .day-header-left {
+    min-width: 0;
+  }
+
+  .day-header-left,
+  .day-header-right {
+    gap: 8px;
+  }
+
+  .day-header-right {
+    justify-content: flex-end;
+  }
+
+  .day-header-right .day-goto-button {
+    width: 28px;
+    height: 28px;
+  }
+
   .import-panel-content {
     align-items: stretch;
     flex-direction: column;
@@ -47,6 +90,48 @@
   .all-answers-heading {
     grid-template-columns: 1fr;
     gap: 14px;
+  }
+
+  .article-header {
+    display: grid;
+    grid-template-columns: 20px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 12px 8px;
+  }
+
+  .article-status {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .article-title {
+    grid-column: 2 / -1;
+    grid-row: 1;
+  }
+
+  .other-appearances {
+    margin-left: 6px;
+  }
+
+  .user-guess {
+    grid-column: 2;
+    grid-row: 2;
+    margin-left: 0;
+  }
+
+  .article-day-controls {
+    grid-column: 2;
+    grid-row: 3;
+    justify-self: start;
+    margin-top: -2px;
+  }
+
+  .article-right-controls {
+    grid-column: 3;
+    grid-row: 2;
+    justify-self: end;
+    gap: 6px;
   }
 
 }
@@ -64,6 +149,20 @@
   .menu-icon {
     width: 18px;
     height: 18px;
+  }
+
+  .day-header {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .day-header-right {
+    justify-self: stretch;
+    justify-content: flex-start;
+    margin-left: 0;
+  }
+
+  .day-header-right .day-goto-button {
+    margin-left: auto;
   }
 
   .pagination-controls {
@@ -96,52 +195,6 @@
     gap: 2px;
   }
 
-  .article-header {
-    display: grid;
-    grid-template-columns: 20px minmax(0, 1fr) auto auto;
-    align-items: center;
-    gap: 8px;
-    padding: 12px;
-  }
-
-  .article-status {
-    grid-column: 1;
-    grid-row: 1;
-  }
-
-  .article-title {
-    grid-column: 2 / -1;
-    grid-row: 1;
-  }
-
-  .other-appearances {
-    margin-left: 6px;
-  }
-
-  .user-guess {
-    grid-column: 2;
-    grid-row: 2;
-    margin-left: 0;
-  }
-
-  .article-day-link {
-    grid-column: 2;
-    grid-row: 3;
-    justify-self: start;
-  }
-
-  .wikipedia-link {
-    grid-column: 3;
-    grid-row: 2;
-    margin-left: 0;
-  }
-
-  .correct-rate {
-    grid-column: 4;
-    grid-row: 2;
-    min-width: 0;
-  }
-
   .answer-checkboxes {
     grid-template-columns: 1fr;
   }
@@ -158,5 +211,15 @@
   .correct-rate-sort {
     justify-content: space-between;
     border-right: 1px solid var(--border);
+  }
+
+  .results-sort-button:nth-child(2),
+  .results-sort-button.correct-rate-sort {
+    border-right: 0;
+  }
+
+  .results-sort-button:nth-child(3),
+  .results-sort-button.correct-rate-sort {
+    border-top: 1px solid var(--border);
   }
 }

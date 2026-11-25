@@ -16,36 +16,40 @@ function DaySection({
   return (
     <section className="day-section">
       <h1 className="day-header">
-        <a href={`https://catfishing.net/game/${dayData.day}`} target="_blank" rel="noopener noreferrer">
-          Day {dayData.day}
-        </a>
-        <span className="day-date">
-          {formatGameDate(dayData.day)}
+        <span className="day-header-left">
+          <a href={`https://catfishing.net/game/${dayData.day}`} target="_blank" rel="noopener noreferrer">
+            Day {dayData.day}
+          </a>
+          <span className="day-date">
+            {formatGameDate(dayData.day)}
+          </span>
         </span>
-        {Number.isFinite(scoreData?.score) && hasAnsweredQuestions && (
-          <span className="day-score">
-            Score: {scoreData.score}
-          </span>
-        )}
-        {dayData.stats?.scoresMean !== undefined && (
-          <span className="day-score">
-            Avg: {dayData.stats.scoresMean.toFixed(1)}
-          </span>
-        )}
-        {showGoToDay && (
-          <button
-            type="button"
-            className="day-goto-button"
-            onClick={() => onGoToDay(dayData.day)}
-            aria-label={`Clear filters and view day ${dayData.day}`}
-            title="Clear filters and view this day"
-          >
-            <svg viewBox="0 0 28 28" aria-hidden="true">
-              <circle cx="14" cy="14" r="12.5" />
-              <path d="M7 14h13M15 9l5 5-5 5" />
-            </svg>
-          </button>
-        )}
+        <span className="day-header-right">
+          {Number.isFinite(scoreData?.score) && hasAnsweredQuestions && (
+            <span className="day-score">
+              Score: {scoreData.score}
+            </span>
+          )}
+          {dayData.stats?.scoresMean !== undefined && (
+            <span className="day-score">
+              Avg: {dayData.stats.scoresMean.toFixed(1)}
+            </span>
+          )}
+          {showGoToDay && (
+            <button
+              type="button"
+              className="day-goto-button"
+              onClick={() => onGoToDay(dayData.day)}
+              aria-label={`Clear filters and view day ${dayData.day}`}
+              title="Clear filters and view this day"
+            >
+              <svg viewBox="0 0 28 28" aria-hidden="true">
+                <circle cx="14" cy="14" r="12.5" />
+                <path d="M7 14h13M15 9l5 5-5 5" />
+              </svg>
+            </button>
+          )}
+        </span>
       </h1>
       {hasAnsweredQuestions && (
         <div className="articles-container">

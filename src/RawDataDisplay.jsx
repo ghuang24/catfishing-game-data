@@ -272,8 +272,6 @@ function RawDataDisplay({ data, scoresData }) {
             highlightQuery={searchQuery}
             renderHighlight={renderHighlight}
             onSelectDay={selectDay}
-            onGoToDay={goToDayWithFiltersReset}
-            showGoToDay={hasNonDateFilters}
           />
         ) : (
           paginatedData.map(dayData => (
