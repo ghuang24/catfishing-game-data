@@ -137,10 +137,6 @@
 }
 
 @media (max-width: 480px) {
-  .page-header h1 {
-    font-size: 2rem;
-  }
-
   .header-menu-button {
     gap: 6px;
     font-size: 0.9rem;

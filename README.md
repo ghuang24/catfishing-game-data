@@ -1,4 +1,4 @@
-# Catfishing Stats
+# Catfishing Explorer
 
 A local-first React application for reviewing Catfishing answers. Shared game
 statistics are static public data; personal scores and guesses remain in the
